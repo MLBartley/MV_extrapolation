@@ -1,0 +1,35 @@
+
+    model {
+    
+    for(i in 1:n){
+    y[i,1:K] ~ dmnorm(mu[i,], Tau.B[,])
+    for(j in 1:5){
+    mu[i,j] <- alpha[j] + beta[j,1]*x[i,1] + beta[j,2]*x[i,2] + beta[j,3]*x[i,3] + beta[j,4]*x[i,4] + beta[j,5]*x[i,5]
+    + beta[j,6]*x[i,6] + beta[j,7]*x[i,7] + beta[j,8]*x[i,8]
+    }
+    }
+    
+    
+    # Model variance-covariance
+    Tau.B[1:K,1:K] ~ dwish(W[,], df)
+    df <- K+1
+    Sigma.B[1:K,1:K] <- inverse(Tau.B[,])
+    for (k in 1:K){
+    for (k.prime in 1:K){
+    rho.B[k,k.prime] <- Sigma.B[k,k.prime]/
+    sqrt(Sigma.B[k,k]*Sigma.B[k.prime,k.prime])
+    }
+    sigma.B[k] <- sqrt(Sigma.B[k,k])
+    }
+    
+    ## Priors for regression coefficients
+    for(j in 1:K){
+    alpha[j] ~ dnorm(0, 0.0001)
+    for(k in 1:nbeta) {
+    beta[j,k] ~ dnorm(0, 0.0001)
+    }
+    }
+    
+    
+    } # end model
+    

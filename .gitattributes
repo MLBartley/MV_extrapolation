@@ -1,0 +1,4 @@
+rdata-dat/runAll_180808.Rdata filter=lfs diff=lfs merge=lfs -text
+csv-data/regional-predictors.csv filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.Rdata filter=lfs diff=lfs merge=lfs -text
