@@ -96,11 +96,11 @@ gg_dat <- gg_dat[[1]]
 
 datamiss <-  ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = miss.f)) +
   scale_colour_manual(name = "Data Status",values = missColors[1:3]) +
-  geom_point(size = 2) +
+  geom_point(size = 2.5) +
   geom_polygon(data = states, aes(x = long, y = lat, group = group),
                fill = NA, color = "black") + 
   coord_fixed(1.3) +
-  theme(text = element_text(size=60),
+  theme(text = element_text(size=80),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 
@@ -264,12 +264,15 @@ nft
 # ggsave("tp_bystate.pdf")
 
 nfd <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat, color = factor(nf_determ))) +
-  scale_colour_manual(name = "Extrapolation",values = c("#E41A1C","#A6CEE3")) +
+  scale_colour_manual(name = " ",
+                      values = c("#E41A1C","#A6CEE3"),
+                      breaks=c("0", "1"),
+                      labels=c("Extrapolation", "Prediction")) +
   geom_point(size = 2) +
   geom_polygon(data = states, aes(x = long, y = lat, group = group),
                fill = NA, color = "black") + 
   coord_fixed(1.3) +
-  theme(text = element_text(size=60),
+  theme(text = element_text(size=80),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 
@@ -328,12 +331,15 @@ nnt
 # ggsave("tp_bystate.pdf")
 
 nnd <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat, color = factor(nn_determ))) +
-  scale_colour_manual(name = "Extrapolation",values = c("#E41A1C","#A6CEE3")) +
-  geom_point(size = .5) +
+  scale_colour_manual(name = "Extrapolation",
+                      values = c("#E41A1C","#A6CEE3"),  
+                      breaks=c("0", "1"),
+                      labels=c("Extrapolation", "Prediction")) +
+  geom_point(size = 2) +
   geom_polygon(data = states, aes(x = long, y = lat, group = group),
                fill = NA, color = "black") + 
   coord_fixed(1.3) +
-  theme(text = element_text(size=14),
+  theme(text = element_text(size=80),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(), 

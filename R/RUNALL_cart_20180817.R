@@ -40,20 +40,28 @@ summary(fit)	#detailed results including surrogate splits
 plot(fit)	#plot decision tree
 text(fit)	#label the decision tree plot
 
-draw.tree(fit,cex=1)
-prp(fit, type = 0, extra = 106)
+fit.prune <- prune(fit, cp = 0.02)
+
+
+draw.tree(fit,cex=3)
+prp(fit, type = 0, extra = 106, cex = 2)
 rpart.plot(fit,                    # middle graph
-           extra = 106,          # show fitted class, probs, percentages
-           box.palette = "auto", # color scheme
+           extra = 101,          # show fitted class, probs, percentages
+           box.palette = c("#E41A1C","#A6CEE3"), # color scheme
            branch.lty = 3,       # dotted branch lines
            shadow.col = "gray",  # shadows under the node boxes
            nn = F, 
-           cex = 1.2,
-           # tweak = 1.9,
-           compress = F)   
+           cex = 1,
+           tweak = 1,
+           compress = F,
+           ycompress = F,
+           gap = 0, 
+           space= 0 
+           # main = "99% cutoff + determinant"
+           )   
 
 
-pdf("figures/nfd_CART.pdf",  width = 34, height = 22.5)
+pdf("figures/nfd_CART.pdf",  width = 34, height = 15)
 prp(fit, type = 0, extra = 106)
 dev.off()
 
