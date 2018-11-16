@@ -17,6 +17,7 @@ extrapolate <-
            Sigma,
            Sampled,
            Leverage,
+           Cond.index = 1,
            K = NULL,
            Theta = NULL,
            link = "none") {
@@ -30,17 +31,39 @@ extrapolate <-
     # if (is.null(K) & !is.null(Theta))
     #   K = diag(ncol(Theta))
     
+    ######### Is this needed? #################
     Beta.var = apply(Beta, 3, cov_fun)
     Beta.var <-  array(Beta.var,
                        dim = c(RV, RV, 
                                ncol(Beta.var)))
+    ###########################################
     
     
     # Mu.var = X.pred %*% tcrossprod(Beta.var, X.pred)
+    
+    ## MV version - gets value per lake
     Mu.mat = array(0, dim = c(S, RV, mcmc.length))
     for (i in 1:mcmc.length){
       Mu.mat[, , i] = X.pred %*% t(Beta[, , i])
     }
+    
+    
+    # MV/UV version - if you just want to look at one reponse conditioned on others
+    
+    # Mu.mat.UVcond = array(0, dim = c(S, 1, mcmc.length))
+    # for (i in 1: mcmc.length){
+    #   Sigma11 <- Sigma[Cond.index, Cond.index, i]
+    #   Sigma12 <- Sigma[Cond.index ,-Cond.index , i]
+    #   Sigma21 <- Sigma[-Cond.index, Cond.index, i]
+    #   Sigma22 <- Sigma[-Cond.index, -Cond.index, i]
+    #     
+    #   mu.cond <- Mu.mat[, Cond.index , i] - Sigma12 %*% solve(Sigma22) %*% () ## Need to know X_-k ??? 
+    #   Sigma.cond <- Sigma11 - Sigma12 %*% solve(Sigma22) %*% Sigma21
+    # }
+    
+    
+    
+    
 #spatial aspect of model    
     # if (!is.null(Theta)) {
     #   Mu.var = Mu.var + K %*% tcrossprod(cov(Theta), K)
@@ -48,7 +71,9 @@ extrapolate <-
     #     Mu.mat[, i] = Mu.mat[, i] + K %*% Theta[i, ]
     # }
     
+    ####### Is this needed? ########
     Mu <- apply(Mu.mat, 3, 'median')
+    ################################
     
     Mu.mat.var = apply(Mu.mat, 1, cov_fun)
     Mu.var = array(Mu.mat.var, dim = c(RV, RV, S))
@@ -65,13 +90,18 @@ extrapolate <-
       Lambda.var = Mu.var
       Lambda.noise <-array(0, dim = dim(Mu.var))
       for (i in 1:length(Mu.var[1,1,])) {
-        Lambda.noise[,,i] <- Mu.var[,,i] + Sigma
+        Lambda.noise[,,i] <- Mu.var[,,i] + apply(runALL$Sigma, c(1,2), 'median')
       }
+      
     #MV version - 
    
     trace <- apply(Lambda.var, 3, trace_fun)
     determinant <- apply(Lambda.var, 3, determ_fun)
     determ_noise <- apply(Lambda.noise, 3, determ_fun)
+    
+    #Single Version
+    
+    
     
     #Cutoff home
     extrapolate <- list()
@@ -146,3 +176,15 @@ extrapolate <-
                cutoffs = cutoff)
     Out
   }
+
+extrapolate_cond <- function(X,
+                             Beta,
+                             Sigma,
+                             Sampled,
+                             Leverage,
+                             Cond.index = 1,
+                             K = NULL,
+                             Theta = NULL,
+                             link = "none") {
+  
+}
