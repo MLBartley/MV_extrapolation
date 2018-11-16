@@ -18,3 +18,9 @@ Organization Sections
 
   -loads data from LAGOS 2018 workshop
   - 
+  
+  
+  02.2_extrapolate_functions.R
+    - short functions for trace, determinent, covariance that can be used with apply
+    - extraoplate gets posterior PV for ALL response variables (unconditioned)
+    - extrapolate_cond gets PPV for TN response conditioned on available data
