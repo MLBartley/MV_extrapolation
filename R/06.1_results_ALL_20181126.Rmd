@@ -1,0 +1,60 @@
+---
+title: "06.1_results_ALL"
+author: "Meridith L Bartley"
+date: "11/26/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#load covariates, data, etc
+load(file = "../rdata-data/list-into-extrap.Rdata")
+list2env(savelist,globalenv())
+
+load(file = "../rdata-data/extrap_full") #created in 04.1
+load(file = "../rdata-data/extrap_TNonly.Rdata") #created in 04.2
+
+
+
+```
+
+```{r cutoff info}
+cutoffs_MV_howmany <- vector()
+cutoffs_UV_howmany <- vector()
+
+for (i in 1:length(cutoffs.cond$cond.extrap)){
+  cutoffs_MV_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][1, ]==0)) #only in/out
+  cutoffs_UV_howmany[i] <- sum(na.omit(cutoffs.cond$cond.extrap[[i]][1, ]==0))
+}
+
+cutoffs_MV_howmany
+cutoffs_UV_howmany
+
+```
+
+```{r PV range}
+
+```
+
+
+## Results Section 
+Fitting `r nrow(X)` lakes to our multivariate response linear model resulted in 
+most lakes' predictions remaining within the EXTRAPOLATION CRITERIA. We explored
+the use of both trace and determinant for obtaining a scalar value representation
+of the multivariate posterior predictive variance in addition to four cutoff 
+criteria. These cutoffs resulted in (\#, \#, \#, \#) lake multivariate response 
+predictions being identified as extrapolations. The predictive variance ranged 
+from \# to \# and the medium for the IN and OUT groups were \# and \#, 
+respectively. Figure REF shows WHAT. To characterize the type of lake that is 
+more likely to be identified as an extrapolation we used a CART Model and found
+that WHAT (Fig REF). Here, CART reveals that the most important factors 
+associated with extrapolation are CHARACTORISTICS. 
+<!-- % -->
+<!-- \begin{figure} -->
+<!--  \centerline{\includegraphics[width=\textwidth]{figures/Fig2.eps}} -->
+<!-- \caption{Identification of prediction vs extrapolation locations of LAGOS-NE lakes.  Four cutoff approaches are compared and presented with increasing strictness. Lakes in red indicate those where predictions were beyond the cutoff value and thus considered extrapolations. } -->
+<!-- \label{f:tracePV} -->
+<!-- \end{figure} -->
+<!-- % -->
+We also focused on the combined approaches used when researchers wish to leverage all information known about a lake when considering whether a single response variable (e.g. Total Nitrogen, as explored here) is an extrapolation. These cutoffs resulted in (\#, \#, \#, \#) lake multivariate response predictions being identified as extrapolations. The predictive variance ranged from \# to \# and the medium for the IN and OUT groups were \# and \#, respectively. Figure REF shows WHAT. To characterize the type of lake that is more likely to be identified as an extrapolation we used a CART Model and found that WHAT (Fig REF). Here, CART reveals that the most important factors associated with extrapolation are CHARACTORISTICS. HOW DOES THESE VALUES COMPARE TO EXTRAPOLATIONS FOR ALL RVS?
