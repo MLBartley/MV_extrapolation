@@ -5,8 +5,12 @@
 ## Created: November 29, 2018
 ## Updated 1: 
 ###############################################################################
-load("./rdata-data/CART_PV_list.Rdata")
+# load("./rdata-data/CART_PV_list.Rdata")
+# list2env(savelist,globalenv())
+
+load("./rdata-data/CART_PV_list_addLatLong.Rdata")
 list2env(savelist,globalenv())
+
 
 library(rattle)
 library(rpart)

@@ -1,5 +1,12 @@
+###############################################################################
+## This script aims to obtain the CART model fit for all lakes
+## to create the visuals needed for reporting/manuscript. 
+##
+## Created: Decemer 02, 2018
+## Updated 1: 
+###############################################################################
 
-source("./R/04.1_RUNALL_extrapolate_20180907.R")
+source("./R/04.1_extrapolate_PV_20180907.R")
 load("./rdata-data/extrap_values_20180927")
 
 library(rattle)
@@ -13,6 +20,7 @@ str(gg_dat)
 str(X)
 
 names <- sort(colnames(gg_dat[[1]])[-(1:2)])
+X <- cbind(gg_dat[[1]][1:2], X[, -1])
 
 fit_binary <- list()
 fit_numeric <- list()
@@ -33,7 +41,7 @@ for (i in seq(1, length(names), by =2)) {
 }
 
 savelist<- list(fit_binary = fit_binary, fit_numeric = fit_numeric, CART.names = names)
-save(savelist, file = "./rdata-data/CART_PV_list.Rdata")
+save(savelist, file = "./rdata-data/CART_PV_list_addLatLong.Rdata")
 
 
 ##check resulting models 

@@ -13,9 +13,11 @@ list2env(savelist,globalenv())
 ## want to color dots by Full/Partial/Missing Y data
 x = LL$nhd_long
 y = LL$nhd_lat
-miss <- c(Y$missing, rep(0, 723 - 113))
-miss <- as.factor(miss)
-miss.f <- fct_collapse(miss, full = c("4"), partial = c("1", "2", "3"), missing = c("0"))
+# miss <- c(Y$missing, rep(0, 723 - 113))
+
+miss <- as.factor(Y$missing)
+miss.f <- fct_collapse(miss, full = c("4"), 
+                       partial = c("1", "2", "3"), missing = c("0"))
 
 plot(x, y, col = miss.f, pch = ".", cex = 2)
 m = map("state", add = T, lwd = 2)
@@ -56,7 +58,9 @@ names(myColors) <- levels(gg_dat$determ)
 missColors <- brewer.pal(3, "Dark2")
 names(missColors) <- levels(miss.f)
 
-gg_dat <- gg_dat[[1]]
+gg_dat <- cbind(gg_dat[[1]], Y)
+
+gg_dat_pred <- gg_dat[-Sampled,]
 
 
 ## common arguments for following plots - only have to alter here
@@ -82,7 +86,7 @@ th.poster <- theme(text = element_text(size=80),
                    axis.text.y=element_blank(),
                    axis.ticks.y=element_blank())
 
-pt.size.paper <- geom_point(size = 0.1)
+pt.size.paper <- geom_point(size = .2)
 
 states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group),
                              fill = NA, color = "black")
@@ -98,16 +102,108 @@ datamiss <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = miss.f)) +
 
 datamiss
 
+## location subset
+
+gg_subset <- gg_dat %>% 
+              select(nhd_lat, nhd_long, tp, tn_combined, chla, secchi) %>% 
+              filter(nhd_long > -73.3, nhd_lat > 42.7)
+
+states_subset <- map_data("state") %>% 
+  subset(region %in% c( "vermont","new hampshire", "maine"))
+
+states.lines_subset <- geom_polygon(data = states_subset, aes(x = long, y = lat, group = group),
+                             fill = NA, color = "black")
+
+
+##TN only miss
+
+TNmiss <- ggplot(gg_subset, 
+                 aes(x = nhd_long,
+                     y = nhd_lat, 
+                     color = fct_collapse(as.factor(is.na(tn_combined)), 
+                                          full = c("FALSE"), 
+                                          missing = c("TRUE")))) +
+  scale_colour_manual(name = " ", 
+                      values = missColors[1:3]) +
+  pt.size.paper + 
+  states.lines_subset + 
+  coord_fixed(1.3) +
+  th.paper
+
+TNmiss
+
+##Ch-a only miss
+Cmiss <- ggplot(gg_subset, 
+                 aes(x = nhd_long,
+                     y = nhd_lat, 
+                     color = fct_collapse(as.factor(is.na(chla)), 
+                                          full = c("FALSE"), 
+                                          missing = c("TRUE")))) +
+  scale_colour_manual(name = " ", 
+                      values = missColors[1:3]) +
+  pt.size.paper + 
+  states.lines_subset + 
+  coord_fixed(1.3) +
+  th.paper
+
+Cmiss
+
+## TP only miss
+
+TPmiss <- ggplot(gg_subset, 
+                 aes(x = nhd_long,
+                     y = nhd_lat, 
+                     color = fct_collapse(as.factor(is.na(tp)), 
+                                          full = c("FALSE"), 
+                                          missing = c("TRUE")))) +
+  scale_colour_manual(name = " ", 
+                      values = missColors[1:3]) +
+  pt.size.paper + 
+  states.lines_subset + 
+  coord_fixed(1.3) +
+  th.paper
+
+TPmiss
+
+## Secchi only miss
+
+Smiss <- ggplot(gg_subset, 
+                 aes(x = nhd_long,
+                     y = nhd_lat, 
+                     color = fct_collapse(as.factor(is.na(secchi)), 
+                                          full = c("FALSE"), 
+                                          missing = c("TRUE")))) +
+  scale_colour_manual(name = " ", 
+                      values = missColors[1:3]) +
+  pt.size.paper + 
+  states.lines_subset + 
+  coord_fixed(1.3) +
+  th.paper
+
+Smiss
+
+
+
+ggarrange(TNmiss, TPmiss, Cmiss, Smiss,  
+          labels = c("A. Total Nitrogen", 
+                     "B. Total Phosphorous", 
+                     "C. Chlorophyl-a", 
+                     "D. Secchi Disk"),
+          ncol = 2, nrow = 2, 
+          common.legend = TRUE,
+          legend = "bottom")
+
+
 # ggsave("figures/datamissmap.pdf", 
 #        width = 860, height = 573,
 #        units = "mm")
 
-mt <- ggplot(na.omit(gg_dat), 
+mt <- ggplot(na.omit(gg_dat_pred), 
              aes(x = nhd_long, y = nhd_lat, 
                  color = factor(max_trace))) +
   scale_colour_manual(name = " ",
-                      values = c("#E41A1C","#A6CEE3"),
-                      breaks=c("0", "1"),
+                      values = c("#E41A1C", "#A6CEE3"),
+                      limits=c("0", "1"),
                       labels=c("Extrapolation", "Prediction"))  +
   pt.size.paper + 
   states.lines + 
@@ -117,16 +213,16 @@ mt
 
 # ggsave("tp_bystate.pdf")
 
-md <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat, 
+md <- ggplot(na.omit(gg_dat_pred), aes(x = nhd_long, y = nhd_lat, 
                                   color = factor(max_determ))) +
   scale_colour_manual(name = " ",
-                      values = c("#E41A1C","#A6CEE3"),
+                      values = c("#A6CEE3", "#E41A1C"),
                       breaks=c("0", "1"),
                       labels=c("Extrapolation", "Prediction"))  +
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper 
 md
 
 # ggsave("tp_bystate.pdf")
@@ -145,7 +241,7 @@ md
 
 ##cutoff: -leverage max
 
-lmt <- ggplot(gg_dat, 
+lmt <- ggplot(na.omit(gg_dat_pred), 
               aes(x = nhd_long, y = nhd_lat, 
                   color = factor(levmax_trace))) +
   scale_colour_manual(name = " ",
@@ -193,7 +289,7 @@ lmd
 
 ## cutoff: 95%
 
-nft <- ggplot(gg_dat, 
+nft <- ggplot(na.omit(gg_dat_pred), 
               aes(x = nhd_long, y = nhd_lat, 
                   color = factor(nf_trace))) +
   scale_colour_manual(name = " ",
@@ -237,7 +333,7 @@ nfd
 
 ## cutoff: 99%
 
-nnt <- ggplot(gg_dat, 
+nnt <- ggplot(na.omit(gg_dat_pred), 
               aes(x = nhd_long, y = nhd_lat, 
                   color = factor(nn_trace))) +
   scale_colour_manual(name = " ",
@@ -285,7 +381,7 @@ ggarrange(mt, lmt, nnt, nft,
                      "C. 99% Cutoff", 
                      "D. 95% Cutoff"),
           ncol = 2, nrow = 2, 
-          common.legend = TRUE, 
+          common.legend = TRUE,
           legend = "bottom")
 
 ggsave("./figures/Fig2.eps", plot = last_plot(), device = "eps", path = NULL,
@@ -293,15 +389,15 @@ ggsave("./figures/Fig2.eps", plot = last_plot(), device = "eps", path = NULL,
        dpi = 300, limitsize = TRUE)
 
 
-ggarrange(md, lmd, nnd, nfd,  
-          labels = c("A. Maximum Cutoff", 
-                     "B. Leverage Cutoff", 
-                     "C. 99% Cutoff", 
-                     "D. 95% Cutoff"),
-          ncol = 2, nrow = 2, 
-          common.legend = TRUE, 
-          legend = "bottom")
-
-ggsave("./figures/Fig3.eps", plot = last_plot(), device = "eps", path = NULL,
-       scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
-       dpi = 300, limitsize = TRUE)
+# ggarrange(md, lmd, nnd, nfd,  
+#           labels = c("A. Maximum Cutoff", 
+#                      "B. Leverage Cutoff", 
+#                      "C. 99% Cutoff", 
+#                      "D. 95% Cutoff"),
+#           ncol = 2, nrow = 2, 
+#           common.legend = TRUE, 
+#           legend = "bottom")
+# 
+# ggsave("./figures/Fig3.eps", plot = last_plot(), device = "eps", path = NULL,
+#        scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
+#        dpi = 300, limitsize = TRUE)

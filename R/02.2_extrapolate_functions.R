@@ -132,9 +132,9 @@ extrapolate <-
     max.obs.dn <- max(determ_noise[Sampled])
     extrapolate[["EC_max"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
     
-    extrapolate[["EC_max"]][1, ] <- as.numeric(trace < max.obs.t)
-    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant < max.obs.d)
-    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise < max.obs.dn)
+    extrapolate[["EC_max"]][1, ] <- as.numeric(trace <= max.obs.t)
+    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant <= max.obs.d)
+    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise <= max.obs.dn)
     extrapolate[["EC_max"]][4, ] <- as.numeric(trace / max.obs.t)
     extrapolate[["EC_max"]][5, ] <- as.numeric(determinant / max.obs.d)
     extrapolate[["EC_max"]][6, ] <- as.numeric(determ_noise / max.obs.dn)
@@ -149,9 +149,9 @@ extrapolate <-
     
     extrapolate[["EC_levmax"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
    
-     extrapolate[["EC_levmax"]][1, ] <- as.numeric(trace < lev.obs.t)
-    extrapolate[["EC_levmax"]][2, ] <- as.numeric(determinant < lev.obs.d)
-    extrapolate[["EC_levmax"]][3, ] <- as.numeric(determ_noise < lev.obs.dn)
+     extrapolate[["EC_levmax"]][1, ] <- as.numeric(trace <= lev.obs.t)
+    extrapolate[["EC_levmax"]][2, ] <- as.numeric(determinant <= lev.obs.d)
+    extrapolate[["EC_levmax"]][3, ] <- as.numeric(determ_noise <= lev.obs.dn)
     extrapolate[["EC_levmax"]][4, ] <- as.numeric(trace / lev.obs.t)
     extrapolate[["EC_levmax"]][5, ] <- as.numeric(determinant / lev.obs.d)
     extrapolate[["EC_levmax"]][6, ] <- as.numeric(determ_noise / lev.obs.dn)
@@ -165,9 +165,9 @@ extrapolate <-
     nf.obs.dn <- quantile(determ_noise[Sampled], probs = .95)
     extrapolate[["EC_95quantile"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
     
-    extrapolate[["EC_95quantile"]][1, ] <- as.numeric(trace < nf.obs.t)
-    extrapolate[["EC_95quantile"]][2, ] <- as.numeric(determinant < nf.obs.d)
-    extrapolate[["EC_95quantile"]][3, ] <- as.numeric(determ_noise < nf.obs.dn)
+    extrapolate[["EC_95quantile"]][1, ] <- as.numeric(trace <= nf.obs.t)
+    extrapolate[["EC_95quantile"]][2, ] <- as.numeric(determinant <= nf.obs.d)
+    extrapolate[["EC_95quantile"]][3, ] <- as.numeric(determ_noise <= nf.obs.dn)
     extrapolate[["EC_95quantile"]][4, ] <- as.numeric(trace / nf.obs.t)
     extrapolate[["EC_95quantile"]][5, ] <- as.numeric(determinant / nf.obs.d)
     extrapolate[["EC_95quantile"]][6, ] <- as.numeric(determ_noise / nf.obs.dn)
@@ -180,9 +180,9 @@ extrapolate <-
     nn.obs.dn <- quantile(determ_noise[Sampled], probs = 0.99)
     extrapolate[["EC_99quantile"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
     
-    extrapolate[["EC_99quantile"]][1, ] <- as.numeric(trace < nn.obs.t)
-    extrapolate[["EC_99quantile"]][2, ] <- as.numeric(determinant < nn.obs.d)
-    extrapolate[["EC_99quantile"]][3, ] <- as.numeric(determ_noise < nn.obs.dn)
+    extrapolate[["EC_99quantile"]][1, ] <- as.numeric(trace <= nn.obs.t)
+    extrapolate[["EC_99quantile"]][2, ] <- as.numeric(determinant <= nn.obs.d)
+    extrapolate[["EC_99quantile"]][3, ] <- as.numeric(determ_noise <= nn.obs.dn)
     extrapolate[["EC_99quantile"]][4, ] <- as.numeric(trace / nn.obs.t)
     extrapolate[["EC_99quantile"]][5, ] <- as.numeric(determinant / nn.obs.d)
     extrapolate[["EC_99quantile"]][6, ] <- as.numeric(determ_noise / nn.obs.dn)
@@ -304,7 +304,7 @@ cutoffs_UV <- function(extrap, Sampled, S) {
   extrapolate[["EC_max"]] = matrix(rep(1, S* 2), nrow = 2, ncol = S)
   #i want two rows: one for binary one for numeric measure
   
-  extrapolate[["EC_max"]][1, ] <- as.numeric(extrap < max.obs)
+  extrapolate[["EC_max"]][1, ] <- as.numeric(extrap <= max.obs)
   extrapolate[["EC_max"]][2, ] <- as.numeric(extrap / max.obs)
   
   
@@ -316,7 +316,7 @@ cutoffs_UV <- function(extrap, Sampled, S) {
   
   extrapolate[["EC_levmax"]] = matrix(rep(1, S*2), nrow = 2, ncol = S)
   
-  extrapolate[["EC_levmax"]][1, ] <- as.numeric(extrap < lev.obs)
+  extrapolate[["EC_levmax"]][1, ] <- as.numeric(extrap <= lev.obs)
   extrapolate[["EC_levmax"]][2, ] <- as.numeric(extrap / lev.obs)
   
   
@@ -328,7 +328,7 @@ cutoffs_UV <- function(extrap, Sampled, S) {
   
   extrapolate[["EC_95quantile"]] = matrix(rep(1, S*2), nrow = 2, ncol = S)
   
-  extrapolate[["EC_95quantile"]][1, ] <- as.numeric(extrap < nf.obs)
+  extrapolate[["EC_95quantile"]][1, ] <- as.numeric(extrap <= nf.obs)
   extrapolate[["EC_95quantile"]][2, ] <- as.numeric(extrap / nf.obs)
   
   
@@ -339,7 +339,7 @@ cutoffs_UV <- function(extrap, Sampled, S) {
   
   extrapolate[["EC_99quantile"]] = matrix(rep(1, S*2), nrow = 2, ncol = S)
   
-  extrapolate[["EC_99quantile"]][1, ] <- as.numeric(extrap < nn.obs)
+  extrapolate[["EC_99quantile"]][1, ] <- as.numeric(extrap <= nn.obs)
   extrapolate[["EC_99quantile"]][2, ] <- as.numeric(extrap / nn.obs)
   
   
