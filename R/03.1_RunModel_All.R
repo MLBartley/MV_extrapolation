@@ -1,6 +1,7 @@
 library(LAGOSNE)
+library(mvtnorm)
 
-source("./R/MCMCAlgorithm.R")
+source(here::here("R", "02.1_MCMCAlgorithm_functions.R"))
 load("./rdata-data/AllDataList_180627v2.Rdata") #created in cluster.datamanage.R
 load("./rdata-data/MissingDataList_180815.Rdata")
 # source("subsetData.R")
@@ -43,13 +44,14 @@ pars$Z=Z.update(data,pars,priors)$Z
 
 
 runALL=drive.lakes(data = data, pars = pars, priors = priors,
-iters = 2000, print.out = 100) ##################
- # save(runALL,file="./rdata-data/runAll_180808.Rdata")					#################
+iters = 20000, print.out = 100) ##################
+  save(runALL,file="./rdata-data/runAll_190326.Rdata")					#################
 #
 
 load("./rdata-data/runAll_180808.Rdata")
 predALL=predict.all(run = runALL, b = 500, e = 2000, iters = 200)	################
-save(predALL,file="./rdata-data/predALL_180815.Rdata")				#######################
+# save(predALL,file="./rdata-data/predALL_180815.Rdata")				#######################
+save(predALL,file="./rdata-data/predALL_190328.Rdata")
 # 
 # predALL.cond = predict.cond(runALL, 500, 2000, 200)
 # save(predALL.cond, file = "pred1_cond_180627.RData")

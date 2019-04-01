@@ -3,6 +3,7 @@ library(ggpubr)
 library("gridExtra")
 library(maps)
 
+
 load(file = "./rdata-data/extrap_full") #created in 04.1
 load(file = "./rdata-data/list-into-extrap.Rdata") #created in 04.1
 list2env(savelist,globalenv())
@@ -16,7 +17,7 @@ y = LL$nhd_lat
 # miss <- c(Y$missing, rep(0, 723 - 113))
 
 miss <- as.factor(Y$missing)
-miss.f <- fct_collapse(miss, full = c("4"), 
+miss.f <- forcats::fct_collapse(miss, full = c("4"), 
                        partial = c("1", "2", "3"), missing = c("0"))
 
 plot(x, y, col = miss.f, pch = ".", cex = 2)
@@ -48,7 +49,7 @@ colnames(gg_dat[[1]])[21:26] <- c("nn_trace", "nn_determ", "nn_determ_noise",
 
 gg_dat[[2]] <- LAGOS_extrapolate$cutoffs
 
-# save(gg_dat, file = "./rdata-data/extrap_values_20180927")
+ # save(gg_dat, file = "./rdata-data/extrap_values_20180927")
 
 #Create a custom color scale
 library(RColorBrewer)
@@ -58,9 +59,11 @@ names(myColors) <- levels(gg_dat$determ)
 missColors <- brewer.pal(3, "Dark2")
 names(missColors) <- levels(miss.f)
 
+gg_dat_pred <- gg_dat[[1]][-Sampled,]
+
 gg_dat <- cbind(gg_dat[[1]], Y)
 
-gg_dat_pred <- gg_dat[-Sampled,]
+
 
 
 ## common arguments for following plots - only have to alter here
@@ -86,7 +89,7 @@ th.poster <- theme(text = element_text(size=80),
                    axis.text.y=element_blank(),
                    axis.ticks.y=element_blank())
 
-pt.size.paper <- geom_point(size = .2)
+pt.size.paper <- geom_point(size = .4)
 
 states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group),
                              fill = NA, color = "black")
@@ -102,11 +105,18 @@ datamiss <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = miss.f)) +
 
 datamiss
 
+# ggsave("figures/datamisssingle.tiff",
+               # width = 860, height = 573,
+               # units = "mm")
+
 ## location subset
 
-gg_subset <- gg_dat %>% 
-              select(nhd_lat, nhd_long, tp, tn_combined, chla, secchi) %>% 
-              filter(nhd_long > -73.3, nhd_lat > 42.7)
+# gg_subset <- gg_dat %>% 
+#               dplyr::select("nhd_lat", "nhd_long", "tp", "tn_combined", "chla", "secchi") %>% 
+#               dplyr::filter(nhd_long > -73.3, nhd_lat > 42.7)
+
+gg_subset <- gg_dat[, c(1, 2, 27, 28, 29, 30)] %>% 
+  dplyr::filter(nhd_long > -73.3, nhd_lat > 42.7)
 
 states_subset <- map_data("state") %>% 
   subset(region %in% c( "vermont","new hampshire", "maine"))
@@ -120,7 +130,7 @@ states.lines_subset <- geom_polygon(data = states_subset, aes(x = long, y = lat,
 TNmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = fct_collapse(as.factor(is.na(tn_combined)), 
+                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
                                           full = c("FALSE"), 
                                           missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -136,7 +146,7 @@ TNmiss
 Cmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = fct_collapse(as.factor(is.na(chla)), 
+                     color = forcats::fct_collapse(as.factor(is.na(chla)), 
                                           full = c("FALSE"), 
                                           missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -153,7 +163,7 @@ Cmiss
 TPmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = fct_collapse(as.factor(is.na(tp)), 
+                     color = forcats::fct_collapse(as.factor(is.na(tp)), 
                                           full = c("FALSE"), 
                                           missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -170,7 +180,7 @@ TPmiss
 Smiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = fct_collapse(as.factor(is.na(secchi)), 
+                     color = forcats::fct_collapse(as.factor(is.na(secchi)), 
                                           full = c("FALSE"), 
                                           missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -194,7 +204,7 @@ ggarrange(TNmiss, TPmiss, Cmiss, Smiss,
           legend = "bottom")
 
 
-# ggsave("figures/datamissmap.pdf", 
+# ggsave("figures/datamissmap.tiff",
 #        width = 860, height = 573,
 #        units = "mm")
 

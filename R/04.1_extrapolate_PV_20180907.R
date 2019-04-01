@@ -7,6 +7,7 @@
 ##
 ## Created: September 2018
 ## Updated 1: re-ran with updated cutoff code (<= not just <)
+## Update 2: re-ran with longer iteration MCMC
 ###############################################################################
 
 
@@ -16,7 +17,7 @@ library(dplyr)
 library(forcats)
 library(magrittr)
 
-load("./rdata-data/runAll_180808.Rdata") 
+load("./rdata-data/runAll_190326.Rdata") 
 
 source("./R/03.3_RUNALL_eda_20180810.R") #gets leverage points and influential points
 source("./R/02.2_extrapolate_functions.R") #gets useful functions

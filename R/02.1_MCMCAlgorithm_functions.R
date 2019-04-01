@@ -7,7 +7,8 @@ beta.update=function(data,pars,priors){
   B=solve(priors$Sigma.beta)
   Sigma.Inv=solve(pars$Sigma)
   for(i in 1:data$n){
-      B=B+kronecker(diag(1,data$K),data$X[i,])%*%Sigma.Inv%*%t(kronecker(diag(1,data$K),data$X[i,]))
+      B=B+kronecker(diag(1,data$K),data$X[i,])%*%Sigma.Inv%*% 
+        t(kronecker(diag(1,data$K),data$X[i,]))
       A=A+kronecker(diag(1,data$K),data$X[i,])%*%Sigma.Inv%*%pars$Z[i,]
   }
   pars$beta=as.vector(rmvnorm(1,solve(B)%*%A,solve(B)))

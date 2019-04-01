@@ -20,7 +20,7 @@ library(maptree)
 whichplot_fit_binary <- fit_binary[c(3, 7, 9, 10, 12)]
 whichplot_fit_binary <- fit_binary[c(9, 10)]
 
- pdf("figures/binary_CART_MV_nf.pdf",  width = 34, height = 30)
+ pdf("figures/binary_CART_MV_nf2.pdf",  width = 34, height = 30)
 
 for (i in  1:length(whichplot_fit_binary)) { #won't work for max or lev max
  rattle::fancyRpartPlot(whichplot_fit_binary[[i]], 

@@ -239,6 +239,7 @@ depth <- data.frame(lagoslakeid=lg$lakes_limno$lagoslakeid,
                     meandepth_m=lg$lakes_limno$meandepth)
 
 # bring in expanded depth dataset - MLB: need lakesnodepth file!
+
 # expanded_depth <- read.csv("./csv-data/lakesnodepth_6.15.18 - lakesnodepth_27Jun17-EDIT.csv",
 #                            stringsAsFactors = FALSE)
 # expanded_depth <- select(expanded_depth, lagoslakeid, ex_maxdepth_m = NEW.maxdepth..meters.)

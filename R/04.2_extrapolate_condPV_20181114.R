@@ -3,7 +3,8 @@
 ## extrapolation measures for one RV (here, Total Nitrogen). 
 ##
 ## Created: November 16(ish), 2018
-## Updated 1: 
+## Updated 1: Feb 25 - updated extrapolate_cond function to draw from [y_in|Y]
+## rather than calculate \mu of [y_in|Y] 
 ###############################################################################
 
 
@@ -12,6 +13,8 @@ load(file = "./rdata-data/list-into-extrap.Rdata")
 list2env(savelist,globalenv())
 
 source("./R/02.2_extrapolate_functions.R")
+
+library(mvtnorm) #needed in extrapolate_cond function
 
 extrapolate.cond <- extrapolate_cond(X = X, Y = Y[, -5], Beta = Beta, Sigma = Sigma,
                                  Sampled = Sampled, Leverage = Leverage,

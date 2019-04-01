@@ -243,9 +243,9 @@ extrapolate_cond <- function(X,
   # MV/UV version - if you just want to look at one reponse conditioned on others
   
   #Want to divide up Sigma - see MVN conditional distribution
-  # Sigma11 <- Sigma[Cond.index, Cond.index, i] 
-  Sigma12 <- Sigma[Cond.index ,-Cond.index , ]
-  # Sigma21 <- Sigma[-Cond.index, Cond.index, i]
+  Sigma11 <- Sigma[Cond.index, Cond.index, ] 
+  Sigma12 <- Sigma[Cond.index ,-Cond.index, ]
+  Sigma21 <- Sigma[-Cond.index, Cond.index, ]
   Sigma22 <- Sigma[-Cond.index, -Cond.index, ]
   
   f=apply(Y[, -Cond.index], 1,  function(x) which(is.na(x)==T))
@@ -254,29 +254,38 @@ extrapolate_cond <- function(X,
   Mu.cond = array(0, dim = c(S, 1, mcmc.length))
   
   f.indx <- which(sapply(f, function(x) length(x) == 3))
-  #all covariates missing (e.g. unsampled lakes), same as before
-  Mu.cond[f.indx,,] = Mu.mat[f.indx, Cond.index, ]
+  # all covariates missing (e.g. unsampled lakes), almost same as before
+  # but need to add Var(sigma^hat | Y) bc rest is 
+  # var(y_in |Y) = var(y^hat_i | Y) + var (sigma^hat | Y)
+  Mu.cond[f.indx,,] = Mu.mat[f.indx, Cond.index, ] + 
+    matrix(rep(Sigma11[], length(f.indx)), 
+              length(f.indx), mcmc.length) 
   
   for (i in 1: mcmc.length){
-    
+
     for (s in 1:S){
       if (length(f[[s]]) == 0){ # all covariates known (woo hoo!)
-        Mu.cond[s, , i] <- Mu.mat[s, Cond.index , i] - 
-          Sigma12[, i] %*% solve(Sigma22[,,i]) %*% 
-          t(as.matrix(Y[s, -Cond.index] - Mu.mat[s, -Cond.index, i])) 
+        Mu.cond[s, , i] <- rmvnorm(1, 
+                                   Mu.mat[s, Cond.index , i] + 
+                                      Sigma12[, i] %*% solve(Sigma22[,,i]) %*%
+                                      t(as.matrix(Y[s, -Cond.index] - 
+                                                    Mu.mat[s, -Cond.index, i])), 
+                                    Sigma11[i] - Sigma12[, i] %*% 
+                                      solve(Sigma22[, , i]) %*% Sigma21[, i])    
       }
       else if (length(f[[s]]) != 3){ #some missing, only want to condition on known
-        Mu.cond[s, , i] <- Mu.mat[s, Cond.index , i] - 
-          Sigma12[-(f[[s]]), i] %*% 
-          solve(Sigma22[-(f[[s]]), -(f[[s]]), i]) %*% 
-          t(as.matrix(Y[s, -Cond.index][-(f[[s]])] - 
-                        Mu.mat[s, -Cond.index, i][-(f[[s]])])) 
-        
-        # Sigma.cond <- Sigma11 - Sigma12 %*% solve(Sigma22) %*% Sigma21 
-        #should be scalar?
-      }
-    }
-  }
+        Mu.cond[s, , i] <- rmvnorm(1, 
+                                   Mu.mat[s, Cond.index , i] + #should this be +? MLB - feb 15 2019
+                                     Sigma12[-(f[[s]]), i] %*%
+                                     solve(Sigma22[-(f[[s]]), -(f[[s]]), i]) %*%
+                                     t(as.matrix(Y[s, -Cond.index][-(f[[s]])] -
+                                                   Mu.mat[s, -Cond.index, i][-(f[[s]])])), 
+                                   Sigma11[i] - Sigma12[-(f[[s]]), i] %*% 
+                                     solve(Sigma22[-(f[[s]]), -(f[[s]]), i]) %*% Sigma21[-(f[[s]]), i]
+                                   )
+      } #ends else if
+    } #ends s in 1:S
+  } # ends i in 1:mcmc.length
   
   Mu.cond.var <- apply(Mu.cond, c(1, 2), var)
 }

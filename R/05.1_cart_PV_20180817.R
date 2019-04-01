@@ -7,7 +7,7 @@
 ###############################################################################
 
 source("./R/04.1_extrapolate_PV_20180907.R")
-load("./rdata-data/extrap_values_20180927")
+  load("./rdata-data/extrap_values_20180927") #made later in 6.01?
 
 library(rattle)
 library(rpart)
@@ -40,7 +40,8 @@ for (i in seq(1, length(names), by =2)) {
   
 }
 
-savelist<- list(fit_binary = fit_binary, fit_numeric = fit_numeric, CART.names = names)
+savelist<- list(fit_binary = fit_binary, fit_numeric = fit_numeric, 
+                CART.names = names)
 save(savelist, file = "./rdata-data/CART_PV_list_addLatLong.Rdata")
 
 

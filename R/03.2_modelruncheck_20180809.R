@@ -3,7 +3,7 @@
 
 library(coda)
 
-load("./rdata-data/runALL.Rdata")
+load("./rdata-data/runAll_190326.Rdata")
 
 n.holdout <- 5
 
@@ -31,5 +31,8 @@ MCMCplot(coda_samples, params = 'Sigma', horiz = FALSE)
 MCMCplot(coda_samples, params = 'beta', horiz = FALSE)
 
 
-
+beta.11 <- mcmc(runALL$beta[2,1 , ])
+plot(beta.11)
+crosscorr(beta.11)
+effectiveSize(beta.11)
 
