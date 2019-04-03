@@ -26,7 +26,7 @@ which.max(extrapolate.cond) #check lake 6592 (IWS_lk_ratio?)
 
 cutoffs.cond <- cutoffs_UV(extrap = extrapolate.cond, Sampled = Sampled, S = nrow(X))
   
-# save(cutoffs.cond, file = "./rdata-data/extrap_TNonly.Rdata")
+ save(cutoffs.cond, file = "./rdata-data/extrap_TNonly.Rdata")
 
 # ##Parallelize?###
 # 

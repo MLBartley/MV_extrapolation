@@ -25,6 +25,8 @@ data$LLxtrain = AllDataList_180627$X[,1:2]
  data$Xtest=as.matrix(cbind(rep(1,nrow(MissingDataList_100815$X)), 
                             MissingDataList_100815$X[,-c(1,2)]))
  
+data$lakeID = c(AllDataList_180627$lagoslakeid, 
+                    MissingDataList_100815$lagoslakeid)  #added April 1 2019 
  
 
 priors=list()

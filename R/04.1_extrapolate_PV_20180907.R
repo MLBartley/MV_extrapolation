@@ -24,11 +24,11 @@ source("./R/02.2_extrapolate_functions.R") #gets useful functions
 
 X <- rbind(runALL$data$X, runALL$data$Xtest)
 LL <- rbind(runALL$data$LLxtrain, runALL$data$LLxtest)
-
+lakeID <- runALL$data$lakeID
 
 Y <- as.data.frame(rbind(runALL$data$Y, runALL$data$Ytest))
 Y[dim(Y)[1]:dim(X)[1], ] <- Y[8300, ] #doesn't have full 'missing' Y length 
-Y <- Y %>% mutate(missing = apply(!is.na(Y), 1, sum))
+Y <- Y %>% dplyr::mutate(missing = apply(!is.na(Y), 1, sum))
 
 
 Beta <- runALL$beta
@@ -40,7 +40,7 @@ rm(runALL)
  
 Leverage <- leveragePoints[[1]] 
 
-savelist <- list(X = X, LL = LL, Y = Y, Beta = Beta, Sigma = Sigma,
+savelist <- list(lakeID = lakeID, X = X, LL = LL, Y = Y, Beta = Beta, Sigma = Sigma,
                  Sampled = Sampled, Leverage = Leverage)
  save(savelist, file = "./rdata-data/list-into-extrap.Rdata")
 
