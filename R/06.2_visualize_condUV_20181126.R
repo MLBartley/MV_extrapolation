@@ -10,24 +10,63 @@ library(ggplot2)
 library(ggpubr)
 library("gridExtra")
 library(maps)
+library(magrittr)
 
 load(file = "./rdata-data/extrap_full") #created in 04.1
 load(file = "./rdata-data/list-into-extrap.Rdata") #created in 04.1
 list2env(savelist,globalenv())
+load(file = "./rdata-data/extrap_TNonly.Rdata")
 
 
 ## Spatial Visualize
 
+## want to color dots by Full/Partial/Missing Y data
+x = LL$nhd_long
+y = LL$nhd_lat
+# miss <- c(Y$missing, rep(0, 723 - 113))
+
+miss <- as.factor(Y$missing)
+miss.f <- forcats::fct_collapse(miss, full = c("4"), 
+                                partial = c("1", "2", "3"), missing = c("0"))
+
+miss.TN <- as.factor(is.na(Y$tn_combined)) %>% 
+  forcats::fct_collapse( full = c("FALSE"), 
+                        missing = c("TRUE"))
+
+states <- map_data("state") %>% 
+  subset(region %in% c("minnesota", "iowa", "missouri", 
+                       "wisconsin", "illinois", "michigan", 
+                       "indiana", "ohio", "pennsylvania", 
+                       "new jersey", "new york", "vermont", 
+                       "new hampshire", "maine", "connecticut",
+                       "rhode island", "massachusetts", "kentucky", 
+                       "west virginia", "virginia", "maryland"))
+gg_TN <- list()
+
+gg_TN[[1]] <- cbind(LL, (t(cutoffs.cond$cond.extrap$EC_max)),
+                     (t(cutoffs.cond$cond.extrap$EC_levmax)),
+                     (t(cutoffs.cond$cond.extrap$EC_95quantile)), 
+                     (t(cutoffs.cond$cond.extrap$EC_99quantile)))
+colnames(gg_TN[[1]])[3:4] <- c("max_extrap", "max_rel" ) 
+colnames(gg_TN[[1]])[5:6] <- c("levmax_extrap", "levmax_rel") 
+colnames(gg_TN[[1]])[7:8] <- c("nf_extrap", "nf_rel") 
+colnames(gg_TN[[1]])[9:10] <- c("nn_extrap", "nn_rel") 
+
+gg_TN[[2]] <- cutoffs.cond$cutoffs
+
+Unsampled_TN <- which(is.na(Y$tn_combined))
+
+ # save(gg_TN, file = "./rdata-data/extrap_values_TNonly")
 
 #Create a custom color scale
 library(RColorBrewer)
 myColors <- brewer.pal(3,"Paired")
-names(myColors) <- levels(gg_dat$determ)
+names(myColors) <- levels(gg_TN$determ)
 
 missColors <- brewer.pal(3, "Dark2")
 names(missColors) <- levels(miss.f)
 
-gg_dat <- gg_dat[[1]]
+gg_TN <- gg_TN[[1]]
 
 
 ## common arguments for following plots - only have to alter here
@@ -59,54 +98,42 @@ states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group
                              fill = NA, color = "black")
 
 
+# maps of full, missing data locations - TN only
+datamiss_TN <- ggplot(gg_TN, aes(x = nhd_long, y = nhd_lat, color = miss.TN)) +
+  scale_colour_manual(name = "Data Status",
+                      values = missColors[c(1, 3)], 
+                      breaks = c("missing", "full"),
+                      labels = c("TN unobserved",  
+                                 "TN observed")) +
+  pt.size.paper + 
+  states.lines + 
+  coord_fixed(1.3) +
+  th.paper + 
+  theme(legend.position="bottom")
+
+datamiss_TN
+
 ## 
 
-mt <- ggplot(na.omit(gg_dat), 
+mt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]), 
              aes(x = nhd_long, y = nhd_lat, 
-                 color = factor(max_trace))) +
+                 color = factor(max_extrap))) +
   scale_colour_manual(name = " ",
-                      values = c("#E41A1C","#A6CEE3"),
-                      breaks=c("0", "1"),
-                      labels=c("Extrapolation", "Prediction"))  +
+                      values = c("#E41A1C", "#A6CEE3"),
+                      limits=c("0", "1"),
+                      labels=c("Extrapolation", "Prediction"))   +
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
   th.paper
 mt
 
-# ggsave("tp_bystate.pdf")
-
-# md <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat, 
-#                                   color = factor(max_determ))) +
-#   scale_colour_manual(name = " ",
-#                       values = c("#E41A1C","#A6CEE3"),
-#                       breaks=c("0", "1"),
-#                       labels=c("Extrapolation", "Prediction"))  +
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# md
-
-# ggsave("tp_bystate.pdf")
-
-# mdn <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, 
-#                           color = factor(max_determ_noise))) +
-#   scale_colour_manual(name = "Extraplation",
-#                       values = c("#E41A1C","#A6CEE3")) + 
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# mdn
-
-# ggsave("tp_bystate.pdf")
 
 ##cutoff: -leverage max
 
-lmt <- ggplot(gg_dat, 
+lmt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]), 
               aes(x = nhd_long, y = nhd_lat, 
-                  color = factor(levmax_trace))) +
+                  color = factor(levmax_extrap))) +
   scale_colour_manual(name = " ",
                       values = c("#E41A1C","#A6CEE3"),
                       breaks=c("0", "1"),
@@ -117,44 +144,13 @@ lmt <- ggplot(gg_dat,
   th.paper
 lmt
 
-# ggsave("tp_bystate.pdf")
-
-# lmd <- ggplot(na.omit(gg_dat), 
-#               aes(x = nhd_long, y = nhd_lat, 
-#                   color = factor(levmax_determ))) +
-#   scale_colour_manual(name = " ",
-#                       values = c("#E41A1C","#A6CEE3"),
-#                       breaks=c("0", "1"),
-#                       labels=c("Extrapolation", "Prediction"))  +
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# lmd
-
-# ggsave("figures/levmax_extrap.pdf")
-
-# lmdn <- ggplot(na.omit(gg_dat), 
-#                aes(x = nhd_long, y = nhd_lat, 
-#                    color = factor(levmax_determ_noise))) +
-#                scale_colour_manual(name = " ",
-#                       values = c("#E41A1C","#A6CEE3"),
-#                       breaks=c("0", "1"),
-#                       labels=c("Extrapolation", "Prediction"))  + 
-#                 pt.size.paper + 
-#                 states.lines + 
-#                 coord_fixed(1.3) +
-#                 th.paper
-# lmdn
-
-# ggsave("tp_bystate.pdf")
 
 
 ## cutoff: 95%
 
-nft <- ggplot(gg_dat, 
+nft <- ggplot(na.omit(gg_TN[Unsampled_TN, ]), 
               aes(x = nhd_long, y = nhd_lat, 
-                  color = factor(nf_trace))) +
+                  color = factor(nf_extrap))) +
   scale_colour_manual(name = " ",
                       values = c("#E41A1C","#A6CEE3"),
                       breaks=c("0", "1"),
@@ -165,102 +161,38 @@ nft <- ggplot(gg_dat,
   th.paper
 nft
 
-# ggsave("tp_bystate.pdf")
 
-# nfd <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat, 
-#                                    color = factor(nf_determ))) +
-#   scale_colour_manual(name = " ",
-#                       values = c("#E41A1C","#A6CEE3"),
-#                       breaks=c("0", "1"),
-#                       labels=c("Extrapolation", "Prediction")) +
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# nfd
-
-# ggsave("figures/nfdeterm_extrap.pdf", 
-# # width = 860, height = 573,
-# units = "mm")
-
-# nfdn <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = factor(nf_determ_noise))) +
-#   scale_colour_manual(name = "Extraplation",
-#                       values = c("#E41A1C","#A6CEE3")) +  
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# nfdn
-
-# ggsave("tp_bystate.pdf")
 
 ## cutoff: 99%
 
-nnt <- ggplot(gg_dat, 
+nnt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]), 
               aes(x = nhd_long, y = nhd_lat, 
-                  color = factor(nn_trace))) +
+                  color = factor(nn_extrap))) +
   scale_colour_manual(name = " ",
                       values = c("#E41A1C","#A6CEE3"),
                       breaks=c("0", "1"),
-                      labels=c("Extrapolation", "Prediction"))  + 
+                      labels=c("Extrapolation", "Prediction"))  +
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
   th.paper
 nnt
 
-# ggsave("tp_bystate.pdf")
 
-# nnd <- ggplot(na.omit(gg_dat), aes(x = nhd_long, y = nhd_lat,
-#                                    color = factor(nn_determ))) +
-#   scale_colour_manual(name = " ",
-#                       values = c("#E41A1C","#A6CEE3"),
-#                       breaks=c("0", "1"),
-#                       labels=c("Extrapolation", "Prediction")) +
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# nnd
-
-# ggsave("tp_bystate.pdf")
-
-# nndn <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = factor(nn_determ_noise))) +
-#   scale_colour_manual(name = "ivh",values = myColors[1:2]) +
-#   pt.size.paper + 
-#   states.lines + 
-#   coord_fixed(1.3) +
-#   th.paper
-# nndn
-
-# ggsave("tp_bystate.pdf")
-rm(gg_dat)
+rm(gg_TN)
 
 
 
-# ggarrange(mt, lmt, nnt, nft,  
-#           labels = c("A. Maximum Cutoff", 
-#                      "B. Leverage Cutoff", 
-#                      "C. 99% Cutoff", 
-#                      "D. 95% Cutoff"),
-#           ncol = 2, nrow = 2, 
-#           common.legend = TRUE, 
-#           legend = "bottom")
-# 
-# ggsave("./figures/extrap_TNonly_trace.eps", plot = last_plot(), device = "eps", path = NULL,
-#        scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
-#        dpi = 300, limitsize = TRUE)
-
-
-ggarrange(md, lmd, nnd, nfd,  
-          labels = c("A. Maximum Cutoff", 
-                     "B. Leverage Cutoff", 
-                     "C. 99% Cutoff", 
+ggarrange(mt, lmt, nnt, nft,
+          labels = c("A. Maximum Cutoff",
+                     "B. Leverage Cutoff",
+                     "C. 99% Cutoff",
                      "D. 95% Cutoff"),
-          ncol = 2, nrow = 2, 
-          common.legend = TRUE, 
+          ncol = 2, nrow = 2,
+          common.legend = TRUE,
           legend = "bottom")
 
-ggsave("./figures/extraplocation_TNonly.eps", plot = last_plot(), device = "eps", path = NULL,
+ggsave("./figures/extrap_TNonly.eps", plot = last_plot(), device = "eps", path = NULL,
        scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
        dpi = 300, limitsize = TRUE)
+

@@ -5,8 +5,10 @@ Organization Sections
 1. Data Gathering/Wrangling
 2. Functions
 3. Running model on data and checking EDA
-4. Calculating Extrapolation Values and running in CART model
-5. Plots
+4. Calculating Extrapolation Values
+5. Running CART models
+6. Plots
+7. Gathers results23
 
 01.1_prep-data.R
   

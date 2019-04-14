@@ -23,14 +23,16 @@ load(file = "../rdata-data/extrap_TNonly.Rdata") #created in 04.2
 cutoffs_MV_howmany <- vector()
 cutoffs_UV_howmany <- vector()
 
+unSampled_TN <- which(is.na(Y$tn_combined))
+
 for (i in 1:length(cutoffs.cond$cond.extrap)){
-  cutoffs_MV_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][1, ]==0)) #only in/out
-  cutoffs_UV_howmany[i] <- sum(na.omit(cutoffs.cond$cond.extrap[[i]][1, ]==0))
+  cutoffs_MV_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][1, - Sampled ]==0)) #only in/out
+  cutoffs_UV_howmany[i] <- sum(na.omit(cutoffs.cond$cond.extrap[[i]][1, unSampled_TN ]==0))
 }
 
 cutoffs_MV_howmany
 cutoffs_UV_howmany
-
+  
 ```
 
 ```{r PV range}

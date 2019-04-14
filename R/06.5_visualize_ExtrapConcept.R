@@ -109,9 +109,11 @@ cc <- ggplot(data_scaled, aes(x=V1, y=V2,
        y = expression(log[10]~chlorophyll~a~(mu~g~L^{-1}))) +
   theme(legend.position="top")
 
-
+cc
 ##try prediction interval and CI
-# Create prediction interval data frame with upper and lower lines corresponding to sequence covering minimum and maximum of x values in original dataset
+# Create prediction interval data frame with upper and lower lines 
+# corresponding to sequence covering minimum and maximum of x values
+# in original dataset
 m <- lm(V2 ~ V1, data = data_scaled[which(data_scaled$subset=="In-Sample Data"),]) 
 
 pred_interval <- predict(m, newdata = data.frame(V1 = data_scaled$V1), 
@@ -120,7 +122,7 @@ pred_interval <- as.data.frame(pred_interval)
 
 data_scaled2 <- cbind(data_scaled, pred_interval)
 
-dd <- ggplot(data_scaled2, aes(x = V1, y = V2, ymin = lwr, ymax = upr,
+dd <- ggplot(data_scaled2, aes(x = V1, y = V2, ymin = fit.lwr, ymax = fit.upr,
                            col = subset, 
                            shape = subset)) +
   geom_point() +
@@ -140,8 +142,8 @@ dd <- ggplot(data_scaled2, aes(x = V1, y = V2, ymin = lwr, ymax = upr,
            alpha = .2) + 
   labs(x = expression(log[10]~total~phosphorus~(mu~g~L^{-1})),
        y = expression(log[10]~chlorophyll~a~(mu~g~L^{-1}))) + 
-  geom_line(aes(y=lwr), color = "red", linetype = "dashed")+
-  geom_line(aes(y=upr), color = "red", linetype = "dashed") +
+  geom_line(aes(y=fit.lwr), color = "red", linetype = "dashed")+
+  geom_line(aes(y=fit.upr), color = "red", linetype = "dashed") +
   # geom_ribbon(aes(ymin = lwr, ymax = upr), 
   #             fill = "blue", alpha = 0.2) + 
   theme(legend.position="top")
@@ -155,6 +157,8 @@ dd
 cc
 ggsave("./figures/Extrapolation_Concept.pdf")
 
-dd
-ggsave("./figures/Extrapolation_Concept_CIPI.pdf")
+dd + geom_point(size = 3) + theme(text = element_text(size=40))
+ggsave("./figures/Extrapolation_Concept_CIPI.eps", 
+       width = 860, height = 573,
+       units = "mm")
 

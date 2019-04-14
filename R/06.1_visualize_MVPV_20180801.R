@@ -2,6 +2,7 @@ library(ggplot2)
 library(ggpubr)
 library("gridExtra")
 library(maps)
+library(scales)
 
 
 load(file = "./rdata-data/extrap_full") #created in 04.1
@@ -67,7 +68,7 @@ gg_dat <- cbind(gg_dat[[1]], Y)
 
 
 ## common arguments for following plots - only have to alter here
-th.paper <- theme(text = element_text(size=12),
+th.paper <- theme(text = element_text(size=40),
                   panel.grid.major = element_blank(), 
                   panel.grid.minor = element_blank(), 
                   panel.background = element_blank(), 
@@ -89,7 +90,7 @@ th.poster <- theme(text = element_text(size=80),
                    axis.text.y=element_blank(),
                    axis.ticks.y=element_blank())
 
-pt.size.paper <- geom_point(size = .4)
+pt.size.paper <- geom_point(size = 3)
 
 states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group),
                              fill = NA, color = "black")
@@ -97,17 +98,23 @@ states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group
 
 # maps of full, missing, parital data locations
 datamiss <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = miss.f)) +
-  scale_colour_manual(name = "Data Status",values = missColors[1:3]) +
+  scale_colour_manual(name = "Data Status",
+                      values = missColors[1:3], 
+                      breaks = c("missing", "partial", "full"),
+                      labels = c("0 water quality variables observed", 
+                                 "1-3 water quality variables observed", 
+                                 "4 water quality variables obesrved")) +
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + 
+  theme(legend.position="bottom")
 
 datamiss
 
-# ggsave("figures/datamisssingle.tiff",
-               # width = 860, height = 573,
-               # units = "mm")
+ggsave("figures/datamisssingle.eps",
+width = 860, height = 573,
+units = "mm")
 
 ## location subset
 
@@ -131,10 +138,12 @@ TNmiss <- ggplot(gg_subset,
                  aes(x = nhd_long,
                      y = nhd_lat, 
                      color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
-                                          full = c("FALSE"), 
-                                          missing = c("TRUE")))) +
+                                           full = c("FALSE"), 
+                                           missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
-                      values = missColors[1:3]) +
+                      values = missColors[1:3], 
+                      breaks = c("full", "missing"), 
+                      labels = c("observed", "unobserved")) +
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
@@ -146,11 +155,13 @@ TNmiss
 Cmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(chla)), 
-                                          full = c("FALSE"), 
-                                          missing = c("TRUE")))) +
+                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                                                   full = c("FALSE"), 
+                                                   missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
-                      values = missColors[1:3]) +
+                      values = missColors[1:3], 
+                      breaks = c("full", "missing"), 
+                      labels = c("observed", "unobserved")) +
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
@@ -163,11 +174,13 @@ Cmiss
 TPmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(tp)), 
-                                          full = c("FALSE"), 
-                                          missing = c("TRUE")))) +
+                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                                                   full = c("FALSE"), 
+                                                   missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
-                      values = missColors[1:3]) +
+                      values = missColors[1:3], 
+                      breaks = c("full", "missing"), 
+                      labels = c("observed", "unobserved")) +
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
@@ -180,11 +193,13 @@ TPmiss
 Smiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(secchi)), 
-                                          full = c("FALSE"), 
-                                          missing = c("TRUE")))) +
+                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                                                   full = c("FALSE"), 
+                                                   missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
-                      values = missColors[1:3]) +
+                      values = missColors[1:3], 
+                      breaks = c("full", "missing"), 
+                      labels = c("observed", "unobserved")) +
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
@@ -194,19 +209,23 @@ Smiss
 
 
 
-ggarrange(TNmiss, TPmiss, Cmiss, Smiss,  
+ind.miss <- ggarrange(TNmiss, TPmiss, Cmiss, Smiss,  
           labels = c("A. Total Nitrogen", 
                      "B. Total Phosphorous", 
                      "C. Chlorophyl-a", 
                      "D. Secchi Disk"),
+          font.label = list(size = 20),
           ncol = 2, nrow = 2, 
           common.legend = TRUE,
           legend = "bottom")
 
+ggarrange(datamiss + guides(colour = guide_legend(nrow = 3)), 
+          ind.miss, widths = c(1.2, 1),
+          ncol = 2)
 
-# ggsave("figures/datamissmap.tiff",
-#        width = 860, height = 573,
-#        units = "mm")
+ggsave("figures/datamissmap_plusindv_2col.eps",
+       width = 860, height = 573,
+       units = "mm")
 
 mt <- ggplot(na.omit(gg_dat_pred), 
              aes(x = nhd_long, y = nhd_lat, 

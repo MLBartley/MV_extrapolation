@@ -7,30 +7,110 @@
 ###############################################################################
 load("./rdata-data/CART_condPV_list.Rdata")
 list2env(savelist,globalenv())
+load("./rdata-data/extrap_values_TNonly")
+
 
 library(rattle)
 library(rpart)
 library(rpart.plot)
 library(maptree)
 
-whichplot_fit_binary <- fit_binary_TN[c(3)]
 
- pdf("figures/binary_CART_UV_nf.pdf",  width = 34, height = 30)
 
-for (i in  1:length(whichplot_fit_binary)) { #won't work for max or lev max
- rattle::fancyRpartPlot(whichplot_fit_binary[[i]], 
-                        main = names(whichplot_fit_binary[i]), 
-                        palettes = c("Reds", "Blues"))
-  
-  rpart.plot(whichplot_fit_binary[[i]],
-             extra = 101,          # show fitted class, probs, percentages
-             box.palette = c("#E41A1C","#A6CEE3"), # color scheme
-             branch.lty = 3,       # dotted branch lines
-             # shadow.col = "gray",  # shadows under the node boxes
-             nn = F,
-             cex = 1)
-}
+fit <- fit_binary_TN[[2]]
+
+printcp(fit)
+
+bestcp <- fit$cptable[which.min(fit$cptable[,"xerror"]),"CP"]
+tree.pruned <- prune(fit, cp = bestcp)
+
+conf.matrix <- table( na.omit(gg_TN[[1]]$nf_extrap), predict(tree.pruned,type="class"))
+rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
+colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
+print(conf.matrix)
+
+
+#second best
+secondcp <- fit$cptable[2, "CP"]
+tree.pruned2 <- prune(fit, cp = secondcp)
+
+conf.matrix <- table( na.omit(gg_TN[[1]]$nf_extrap), predict(tree.pruned2,type="class"))
+rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
+colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
+print(conf.matrix)
+
+rattle::fancyRpartPlot(tree.pruned2, 
+                       main = names(gg_TN[[1]]$nf_extrap), 
+                       palettes = c("Reds", "Blues"))
+
+rpart.plot::rpart.plot(tree.pruned2,
+                       extra = 101,          # show fitted class, probs, percentages
+                       box.palette = c("#E41A1C","#A6CEE3"), # color scheme
+                       branch.lty = 3,       # dotted branch lines
+                       # shadow.col = "gray",  # shadows under the node boxes
+                       nn = F,
+                       cex = 1)
+
+
+#third best
+thirdcp <- fit$cptable[3, "CP"]
+tree.pruned3 <- prune(fit, cp = thirdcp)
+
+conf.matrix <- table( na.omit(gg_TN[[1]]$nf_extrap), predict(tree.pruned3,type="class"))
+rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
+colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
+print(conf.matrix)
+
+
+
+
+ pdf("figures/binary_CART_CMVPV_nf.pdf",  width = 34, height = 30)
+
+rattle::fancyRpartPlot(tree.pruned2, 
+                       main = names(gg_TN[[1]]$nf_extrap), 
+                       palettes = c("Reds", "Blues"))
+
+rpart.plot::rpart.plot(tree.pruned2,
+                       extra = 101,          # show fitted class, probs, percentages
+                       box.palette = c("#E41A1C","#A6CEE3"), # color scheme
+                       branch.lty = 3,       # dotted branch lines
+                       # shadow.col = "gray",  # shadows under the node boxes
+                       nn = F,
+                       cex = 1)
+
+
+rattle::fancyRpartPlot(tree.pruned3, 
+                       main = names(gg_TN[[1]]$nf_extrap), 
+                       palettes = c("Reds", "Blues"))
+
+rpart.plot::rpart.plot(tree.pruned3,
+                       extra = 101,          # show fitted class, probs, percentages
+                       box.palette = c("#E41A1C","#A6CEE3"), # color scheme
+                       branch.lty = 3,       # dotted branch lines
+                       # shadow.col = "gray",  # shadows under the node boxes
+                       nn = F,
+                       cex = 1)
+
 dev.off()
+
+# whichplot_fit_binary <- fit_binary_TN[c( 2)] 
+# 
+#  pdf("figures/binary_CART_UV_nf.pdf",  width = 34, height = 30)
+# 
+# for (i in  1:length(whichplot_fit_binary)) { #won't work for max or lev max
+#  rattle::fancyRpartPlot(whichplot_fit_binary[[i]], 
+#                         main = names(whichplot_fit_binary[i]), 
+#                         palettes = c("Reds", "Blues"))
+#   
+#   rpart.plot(whichplot_fit_binary[[i]],
+#              extra = 101,          # show fitted class, probs, percentages
+#              box.palette = c("#E41A1C","#A6CEE3"), # color scheme
+#              branch.lty = 3,       # dotted branch lines
+#              # shadow.col = "gray",  # shadows under the node boxes
+#              nn = F,
+#              cex = 1)
+# }
+# dev.off()
 
 # 
 # draw.tree(fit,cex=1)
