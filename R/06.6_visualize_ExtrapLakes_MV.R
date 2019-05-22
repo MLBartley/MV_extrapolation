@@ -183,7 +183,7 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
      theme(legend.position="none")
   
     
-  ggsave("figures/violin99_MVPV.pdf",
+  ggsave("figures/figureS1.pdf",
          width = 860, height = 573,
          units = "mm")
   
@@ -191,5 +191,5 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
   # ggsave("figures/violin99_MVPV_nolines.pdf",
   #        width = 860, height = 573,
   #        units = "mm")
-  # 
+
   

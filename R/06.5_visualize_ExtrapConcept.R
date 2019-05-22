@@ -157,7 +157,13 @@ dd
 cc
 ggsave("./figures/Extrapolation_Concept.pdf")
 
-dd + geom_point(size = 3) + theme(text = element_text(size=40))
+dd + geom_point(size = 4) + theme(text = element_text(size=40))
+
+ggsave("./figures/figure1.pdf", 
+       width = 860, height = 573,
+       units = "mm")
+
+
 ggsave("./figures/Extrapolation_Concept_CIPI.eps", 
        width = 860, height = 573,
        units = "mm")

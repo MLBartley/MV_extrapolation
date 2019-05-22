@@ -199,6 +199,10 @@ ggparcoord(subset_nn[subset_subset, ],
   ggtitle("TN Extrapolated Lakes - 99% Cutoff") +
   theme(legend.position="none")
 
+ggsave("figures/figureS2.pdf",
+       width = 860, height = 573,
+       units = "mm")
+
 ggsave("figures/violin99_CMVPV.eps",
        width = 860, height = 573,
        units = "mm")
@@ -221,16 +225,15 @@ ggparcoord(subset(gg_dat2, levmax_ext == "extrapolated"),
   # geom_point(data = gg_dat_melt, aes(y = "value", group = "variable", color= "#F8766D"), 
   #            position = "jitter", 
   #            alpha = 0.35) +
-  theme_minimal(base_size = 16) +
+  theme_minimal(base_size = 40) +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1)) +
-  # ylab(label = var) + 
+  ylab(label = "Scaled Value") +
   theme(axis.title.x = element_blank(), 
-        legend.title = element_blank())   +
-  ggtitle("TN Extrapolated Lakes - Leverage Cutoff")
+        legend.title = element_blank()) +
+  ggtitle("TN Extrapolated Lakes - Leverage Cutoff") +
+    theme(legend.position="none")
 
-ggsave("figures/violinlevmax_CMVPV.pdf",
-       width = 860, height = 573,
-       units = "mm")
+
 
 
 

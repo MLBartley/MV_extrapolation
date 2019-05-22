@@ -91,6 +91,8 @@ th.poster <- theme(text = element_text(size=80),
                    axis.ticks.y=element_blank())
 
 pt.size.paper <- geom_point(size = 3)
+# pt.size.paper <- geom_point(size = 4) #pdf file
+
 
 states.lines <- geom_polygon(data = states, aes(x = long, y = lat, group = group),
                              fill = NA, color = "black")
@@ -147,7 +149,7 @@ TNmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper  + theme(legend.text=element_text(size = 30))
 
 TNmiss
 
@@ -165,7 +167,7 @@ Cmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper  + theme(legend.text=element_text(size = 30))
 
 Cmiss
 
@@ -184,7 +186,7 @@ TPmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper  + theme(legend.text=element_text(size = 30))
 
 TPmiss
 
@@ -203,7 +205,7 @@ Smiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper  + theme(legend.text=element_text(size = 30))
 
 Smiss
 
@@ -214,14 +216,21 @@ ind.miss <- ggarrange(TNmiss, TPmiss, Cmiss, Smiss,
                      "B. Total Phosphorous", 
                      "C. Chlorophyl-a", 
                      "D. Secchi Disk"),
-          font.label = list(size = 20),
+          font.label = list(size = 30),
           ncol = 2, nrow = 2, 
           common.legend = TRUE,
-          legend = "bottom")
+          legend = "bottom") 
 
-ggarrange(datamiss + guides(colour = guide_legend(nrow = 3)), 
-          ind.miss, widths = c(1.2, 1),
-          ncol = 2)
+ggarrange(datamiss 
+          + guides(colour = guide_legend(nrow = 3))
+          + theme(legend.text=element_text(size=30)), 
+          ind.miss + theme(legend.text=element_text(size=30)),
+          widths = c(1.2, 1),
+          ncol = 2) 
+
+ggsave("figures/figure3.pdf", 
+       width = 860, height = 573,
+       units = "mm")
 
 ggsave("figures/datamissmap_plusindv_2col.eps",
        width = 860, height = 573,
@@ -237,7 +246,7 @@ mt <- ggplot(na.omit(gg_dat_pred),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 mt
 
 # ggsave("tp_bystate.pdf")
@@ -280,7 +289,7 @@ lmt <- ggplot(na.omit(gg_dat_pred),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 lmt
 
 # ggsave("tp_bystate.pdf")
@@ -328,7 +337,7 @@ nft <- ggplot(na.omit(gg_dat_pred),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 nft
 
 # ggsave("tp_bystate.pdf")
@@ -372,7 +381,7 @@ nnt <- ggplot(na.omit(gg_dat_pred),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 nnt
 
 # ggsave("tp_bystate.pdf")
@@ -410,8 +419,13 @@ ggarrange(mt, lmt, nnt, nft,
                      "C. 99% Cutoff", 
                      "D. 95% Cutoff"),
           ncol = 2, nrow = 2, 
+          font.label = list(size = 30),
           common.legend = TRUE,
-          legend = "bottom")
+          legend = "bottom") 
+
+ggsave("./figures/figure4.pdf", 
+       width = 860, height = 573,
+       units = "mm")
 
 ggsave("./figures/Fig2.eps", plot = last_plot(), device = "eps", path = NULL,
        scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),

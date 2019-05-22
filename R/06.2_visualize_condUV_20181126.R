@@ -125,7 +125,7 @@ mt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper+ theme(legend.text=element_text(size=30))
 mt
 
 
@@ -141,7 +141,7 @@ lmt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 lmt
 
 
@@ -158,8 +158,8 @@ nft <- ggplot(na.omit(gg_TN[Unsampled_TN, ]),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
-nft
+  th.paper+ theme(legend.text=element_text(size=30))
+nft 
 
 
 
@@ -175,7 +175,7 @@ nnt <- ggplot(na.omit(gg_TN[Unsampled_TN, ]),
   pt.size.paper + 
   states.lines + 
   coord_fixed(1.3) +
-  th.paper
+  th.paper + theme(legend.text=element_text(size=30))
 nnt
 
 
@@ -189,8 +189,13 @@ ggarrange(mt, lmt, nnt, nft,
                      "C. 99% Cutoff",
                      "D. 95% Cutoff"),
           ncol = 2, nrow = 2,
+          font.label = list(size = 30),
           common.legend = TRUE,
           legend = "bottom")
+
+ggsave("./figures/figure6.pdf", 
+       width = 860, height = 573,
+       units = "mm")
 
 ggsave("./figures/extrap_TNonly.eps", plot = last_plot(), device = "eps", path = NULL,
        scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
