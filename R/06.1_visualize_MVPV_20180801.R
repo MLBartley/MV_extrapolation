@@ -157,7 +157,7 @@ TNmiss
 Cmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                     color = forcats::fct_collapse(as.factor(is.na(chla)), 
                                                    full = c("FALSE"), 
                                                    missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -176,7 +176,7 @@ Cmiss
 TPmiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                     color = forcats::fct_collapse(as.factor(is.na(tp)), 
                                                    full = c("FALSE"), 
                                                    missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
@@ -195,7 +195,7 @@ TPmiss
 Smiss <- ggplot(gg_subset, 
                  aes(x = nhd_long,
                      y = nhd_lat, 
-                     color = forcats::fct_collapse(as.factor(is.na(tn_combined)), 
+                     color = forcats::fct_collapse(as.factor(is.na(secchi)), 
                                                    full = c("FALSE"), 
                                                    missing = c("TRUE")))) +
   scale_colour_manual(name = " ", 
