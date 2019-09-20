@@ -112,8 +112,7 @@ datamiss <- ggplot(gg_dat, aes(x = nhd_long, y = nhd_lat, color = miss.f)) +
   th.paper + 
   theme(legend.position="bottom")
 
-datamiss
-
+datamiss + theme(legend.text=element_text(size = 34))
 ggsave("figures/datamisssingle.eps",
 width = 860, height = 573,
 units = "mm")
@@ -216,10 +215,15 @@ ind.miss <- ggarrange(TNmiss, TPmiss, Cmiss, Smiss,
                      "B. Total Phosphorous", 
                      "C. Chlorophyl-a", 
                      "D. Secchi Disk"),
-          font.label = list(size = 30),
+          font.label = list(size = 34),
           ncol = 2, nrow = 2, 
           common.legend = TRUE,
           legend = "bottom") 
+
+ind.miss
+ggsave("figures/datamiss_4RV.eps",
+       width = 860, height = 573,
+       units = "mm")
 
 ggarrange(datamiss 
           + guides(colour = guide_legend(nrow = 3))
@@ -235,6 +239,9 @@ ggsave("figures/figure3.pdf",
 ggsave("figures/datamissmap_plusindv_2col.eps",
        width = 860, height = 573,
        units = "mm")
+
+
+
 
 mt <- ggplot(na.omit(gg_dat_pred), 
              aes(x = nhd_long, y = nhd_lat, 
