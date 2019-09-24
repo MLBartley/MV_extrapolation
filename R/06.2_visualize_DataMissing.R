@@ -148,9 +148,12 @@ TNmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper  + theme(legend.text=element_text(size = 30))
+  th.paper   + 
+  theme(legend.text=element_text(size = 50)) +
+  guides(color = guide_legend(override.aes = list(size = 10)))
 
-TNmiss
+
+# TNmiss
 
 ##Ch-a only miss
 Cmiss <- ggplot(gg_subset, 
@@ -166,9 +169,12 @@ Cmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper  + theme(legend.text=element_text(size = 30))
+  th.paper  + 
+  theme(legend.text=element_text(size = 50)) +
+  guides(color = guide_legend(override.aes = list(size = 10)))
 
-Cmiss
+
+# Cmiss
 
 ## TP only miss
 
@@ -185,9 +191,11 @@ TPmiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper  + theme(legend.text=element_text(size = 30))
+  th.paper  + 
+  theme(legend.text=element_text(size = 50)) +
+  guides(color = guide_legend(override.aes = list(size = 10)))
 
-TPmiss
+# TPmiss
 
 ## Secchi only miss
 
@@ -204,9 +212,12 @@ Smiss <- ggplot(gg_subset,
   pt.size.paper + 
   states.lines_subset + 
   coord_fixed(1.3) +
-  th.paper  + theme(legend.text=element_text(size = 30))
+  th.paper  + 
+  theme(legend.text=element_text(size = 50)) +
+  guides(color = guide_legend(override.aes = list(size = 10)))
 
-Smiss
+
+# Smiss
 
 
 
@@ -215,30 +226,33 @@ ind.miss <- ggarrange(TNmiss, TPmiss, Cmiss, Smiss,
                      "B. Total Phosphorous", 
                      "C. Chlorophyl-a", 
                      "D. Secchi Disk"),
-          font.label = list(size = 34),
+          font.label = list(size = 35),
           ncol = 2, nrow = 2, 
           common.legend = TRUE,
           legend = "bottom") 
 
 ind.miss
-ggsave("figures/datamiss_4RV.eps",
-       width = 860, height = 573,
-       units = "mm")
+# ggsave("figures/datamiss_4RV.eps",
+#        width = 860, height = 573,
+#        units = "mm")
 
 ggarrange(datamiss 
-          + guides(colour = guide_legend(nrow = 3))
-          + theme(legend.text=element_text(size=30)), 
-          ind.miss + theme(legend.text=element_text(size=30)),
+          + guides(colour = guide_legend(nrow = 3, 
+                                         override.aes = list(size = 10)))
+          # + guides(color = guide_legend(override.aes = list(size = 10)))
+          + theme(legend.text=element_text(size=50)), 
+          ind.miss 
+          + theme(legend.text=element_text(size=30)),
           widths = c(1.2, 1),
           ncol = 2) 
 
-ggsave("figures/figure3.pdf", 
+ggsave("figures/Fig3.eps", 
        width = 860, height = 573,
        units = "mm")
 
-ggsave("figures/datamissmap_plusindv_2col.eps",
-       width = 860, height = 573,
-       units = "mm")
+# ggsave("figures/datamissmap_plusindv_2col.eps",
+#        width = 860, height = 573,
+#        units = "mm")
 
 
 
