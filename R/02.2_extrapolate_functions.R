@@ -23,6 +23,8 @@ cov_fun <- function(cov_mat) {
 #' @param K NULL - only need if spatial component included in model.
 #' @param Theta NULL - only need if included in model - not here
 #' @param link "none" - only needed for non-linear model (e.g. log link) 
+#' @param extrap_index - choose between binary or numeric formulation of 
+#' extrapolation index
 #'
 #' @return Returns list of extrapolation measures, predictive variance matrices, 
 #' trace values, determinant values with and without noise included, and cutoff
@@ -39,7 +41,8 @@ extrapolate <-
            # Cond.index = 1,
            K = NULL,
            Theta = NULL,
-           link = "none") {
+           link = "none", 
+           extrap_index = c("binary", "numeric")) {
     S = nrow(X)
     RV <- nrow(Beta)
     if (is.array(Beta) == FALSE)
@@ -67,29 +70,6 @@ extrapolate <-
     }
     
     
-    # MV/UV version - if you just want to look at one reponse conditioned on others
-    
-    # Mu.mat.UVcond = array(0, dim = c(S, 1, mcmc.length))
-    # for (i in 1: mcmc.length){
-    #   Sigma11 <- Sigma[Cond.index, Cond.index, i]
-    #   Sigma12 <- Sigma[Cond.index ,-Cond.index , i]
-    #   Sigma21 <- Sigma[-Cond.index, Cond.index, i]
-    #   Sigma22 <- Sigma[-Cond.index, -Cond.index, i]
-    #     
-    #   mu.cond <- Mu.mat[, Cond.index , i] - Sigma12 %*% solve(Sigma22) %*% () ## Need to know X_-k ??? 
-    #   Sigma.cond <- Sigma11 - Sigma12 %*% solve(Sigma22) %*% Sigma21
-    # }
-    
-    
-    
-    
-#spatial aspect of model    
-    # if (!is.null(Theta)) {
-    #   Mu.var = Mu.var + K %*% tcrossprod(cov(Theta), K)
-    #   for (i in 1:mcmc.length)
-    #     Mu.mat[, i] = Mu.mat[, i] + K %*% Theta[i, ]
-    # }
-    
     ####### Is this needed? ########
     Mu <- apply(Mu.mat, 3, 'median')
     ################################
@@ -97,7 +77,6 @@ extrapolate <-
     Mu.mat.var = apply(Mu.mat, 1, cov_fun)
     Mu.var = array(Mu.mat.var, dim = c(RV, RV, S))
 
-    #why median??
     # small = 0.00000001
     # if (link == "log")
     #   Lambda.var = (exp(Mu)) ^ 2 * diag(Mu.var)
@@ -112,16 +91,11 @@ extrapolate <-
         Lambda.noise[,,i] <- Mu.var[,,i] + apply(Sigma, c(1,2), 'median')
       }
       
-    #MV version - 
-   
-    trace <- apply(Lambda.var, 3, trace_fun)
-    determinant <- apply(Lambda.var, 3, determ_fun)
-    determ_noise <- apply(Lambda.noise, 3, determ_fun)
-    
-    #Single Version
-    
-    
-    
+    #MV version 
+     trace <- apply(Lambda.var, 3, trace_fun)
+     determinant <- apply(Lambda.var, 3, determ_fun)
+     determ_noise <- apply(Lambda.noise, 3, determ_fun)
+
     #Cutoff home
     extrapolate <- list()
     cutoff <- list()
@@ -130,16 +104,36 @@ extrapolate <-
     max.obs.t = max(trace[Sampled])
     max.obs.d = max(determinant[Sampled])
     max.obs.dn <- max(determ_noise[Sampled])
+    
+    #save the cutoff values 
+    cutoff[["max"]] <- c(max.obs.t, max.obs.d, max.obs.dn)
+    
+    ## commenting out but may be useful to clean up code. if i ever do that
+    ## beware ye who enter here
+    
+    # if(extrap_index == "numeric") {
+    #   #center all of the MVPV scalar values by the chosen cutoffs 
+    #   #to obtain RMVPV values
+    #   trace <- trace / max.obs.t
+    #   determinant <- determinant / max.obs.d
+    #   determ_noise <- determ_noise / max.obs.dn
+    #   
+    #   #now the cutoffs are all at 1 (i.e. if MVPV > cutoff then RMVPV >1)
+    #   max.obs.t <- 1
+    #   max.obs.d <- 1
+    #   max.obs.dn <- 1
+    # }
+    
     extrapolate[["EC_max"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
     
-    extrapolate[["EC_max"]][1, ] <- as.numeric(trace <= max.obs.t)
-    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant <= max.obs.d)
-    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise <= max.obs.dn)
-    extrapolate[["EC_max"]][4, ] <- as.numeric(trace / max.obs.t)
-    extrapolate[["EC_max"]][5, ] <- as.numeric(determinant / max.obs.d)
-    extrapolate[["EC_max"]][6, ] <- as.numeric(determ_noise / max.obs.dn)
+    extrapolate[["EC_max"]][1, ] <- as.numeric(trace <= max.obs.t) #EI using MVPV(t) + max cutoff
+    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant <= max.obs.d) #EI using MVPV(d) + max cutoff
+    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise <= max.obs.dn) #EI using MVPV(d + noise) + max cutoff
+    extrapolate[["EC_max"]][4, ] <- as.numeric(trace / max.obs.t) #RMVPV(t) with max cutoff
+    extrapolate[["EC_max"]][5, ] <- as.numeric(determinant / max.obs.d) #RMVPV(d) with max cutoff
+    extrapolate[["EC_max"]][6, ] <- as.numeric(determ_noise / max.obs.dn) #RMVPV(d + noise) with max cutoff
     
-    cutoff[["max"]] <- c(max.obs.t, max.obs.d, max.obs.dn)
+    
     
     #Cutoff - max[-leverage]
     
