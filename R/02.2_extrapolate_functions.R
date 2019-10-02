@@ -126,12 +126,12 @@ extrapolate <-
     
     extrapolate[["EC_max"]] = matrix(rep(1, S*2), nrow = 6, ncol = S)
     
-    extrapolate[["EC_max"]][1, ] <- as.numeric(trace <= max.obs.t)
-    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant <= max.obs.d)
-    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise <= max.obs.dn)
-    extrapolate[["EC_max"]][4, ] <- as.numeric(trace / max.obs.t)
-    extrapolate[["EC_max"]][5, ] <- as.numeric(determinant / max.obs.d)
-    extrapolate[["EC_max"]][6, ] <- as.numeric(determ_noise / max.obs.dn)
+    extrapolate[["EC_max"]][1, ] <- as.numeric(trace <= max.obs.t) #EI using MVPV(t) + max cutoff
+    extrapolate[["EC_max"]][2, ] <- as.numeric(determinant <= max.obs.d) #EI using MVPV(d) + max cutoff
+    extrapolate[["EC_max"]][3, ] <- as.numeric(determ_noise <= max.obs.dn) #EI using MVPV(d + noise) + max cutoff
+    extrapolate[["EC_max"]][4, ] <- as.numeric(trace / max.obs.t) #RMVPV(t) with max cutoff
+    extrapolate[["EC_max"]][5, ] <- as.numeric(determinant / max.obs.d) #RMVPV(d) with max cutoff
+    extrapolate[["EC_max"]][6, ] <- as.numeric(determ_noise / max.obs.dn) #RMVPV(d + noise) with max cutoff
     
     
     

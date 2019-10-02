@@ -8,9 +8,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-#load covariates, data, etc
-load(file = "../rdata-data/list-into-extrap.Rdata")
-list2env(savelist,globalenv())
+#load covariates, data, etc  
+  load(file = "../rdata-data/extrap_full") #created in 04.1
+  load(file = "../rdata-data/list-into-extrap.Rdata") #created in 04.1
+  list2env(savelist,globalenv())
+  load(file = "../rdata-data/extrap_values_20180927") #created in 06.1
 
 load(file = "../rdata-data/extrap_full") #created in 04.1
 load(file = "../rdata-data/extrap_TNonly.Rdata") #created in 04.2
@@ -19,44 +21,51 @@ load(file = "../rdata-data/extrap_TNonly.Rdata") #created in 04.2
 
 ```
 
-```{r cutoff info}
-cutoffs_MV_howmany <- vector()
+```{r extrapolations - how many}
+cutoffs_MVt_howmany <- vector()
+cutoffs_MVd_howmany <- vector()
 cutoffs_UV_howmany <- vector()
 
 unSampled_TN <- which(is.na(Y$tn_combined))
 
 for (i in 1:length(cutoffs.cond$cond.extrap)){
-  cutoffs_MV_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][1, - Sampled ]==0)) #only in/out
+  cutoffs_MVt_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][1, - Sampled ]==0)) #only in/out but same identified as numeric 
+  cutoffs_MVd_howmany[i] <- sum(na.omit(LAGOS_extrapolate$extrapolate[[i]][2, - Sampled ]==0))
   cutoffs_UV_howmany[i] <- sum(na.omit(cutoffs.cond$cond.extrap[[i]][1, unSampled_TN ]==0))
 }
 
-cutoffs_MV_howmany
+cutoffs_MVt_howmany 
+cutoffs_MVd_howmany
+
 cutoffs_UV_howmany
   
 ```
 
-```{r PV range}
+```{r extrapolations - which lakes?}
+cutoffs_MVt_where <- vector()
+cutoffs_MVd_where <- vector()
+cutoffs_UV_where <- vector()
 
+  
+  
+
+  ##bring Lake IDs forward
+  extrap_id_x_y <-  cbind(gg_dat[[1]], #extrapolation info
+                    lakeID, #lake id
+                    X, 
+                    Y) #logY 
+  
+  whichID.extrap <- list()
+  names<- colnames(extrap_id_x_y)[c(3,4,9,10,15,16,21,22)] 
+  
+  for(n in names) {
+    extrapolated.all <- which(factor(extrap_id_x_y[,n]) == 0)
+  extrapolated.pred <- extrapolated.all[which(extrapolated.all > max(Sampled))]
+  
+  whichID.extrap[[n]] <- extrap_id_x_y$lakeID[extrapolated.pred]
+  }
+
+  
+  
+  
 ```
-
-
-## Results Section 
-Fitting `r nrow(X)` lakes to our multivariate response linear model resulted in 
-most lakes' predictions remaining within the EXTRAPOLATION CRITERIA. We explored
-the use of both trace and determinant for obtaining a scalar value representation
-of the multivariate posterior predictive variance in addition to four cutoff 
-criteria. These cutoffs resulted in (\#, \#, \#, \#) lake multivariate response 
-predictions being identified as extrapolations. The predictive variance ranged 
-from \# to \# and the medium for the IN and OUT groups were \# and \#, 
-respectively. Figure REF shows WHAT. To characterize the type of lake that is 
-more likely to be identified as an extrapolation we used a CART Model and found
-that WHAT (Fig REF). Here, CART reveals that the most important factors 
-associated with extrapolation are CHARACTORISTICS. 
-<!-- % -->
-<!-- \begin{figure} -->
-<!--  \centerline{\includegraphics[width=\textwidth]{figures/Fig2.eps}} -->
-<!-- \caption{Identification of prediction vs extrapolation locations of LAGOS-NE lakes.  Four cutoff approaches are compared and presented with increasing strictness. Lakes in red indicate those where predictions were beyond the cutoff value and thus considered extrapolations. } -->
-<!-- \label{f:tracePV} -->
-<!-- \end{figure} -->
-<!-- % -->
-We also focused on the combined approaches used when researchers wish to leverage all information known about a lake when considering whether a single response variable (e.g. Total Nitrogen, as explored here) is an extrapolation. These cutoffs resulted in (\#, \#, \#, \#) lake multivariate response predictions being identified as extrapolations. The predictive variance ranged from \# to \# and the medium for the IN and OUT groups were \# and \#, respectively. Figure REF shows WHAT. To characterize the type of lake that is more likely to be identified as an extrapolation we used a CART Model and found that WHAT (Fig REF). Here, CART reveals that the most important factors associated with extrapolation are CHARACTORISTICS. HOW DOES THESE VALUES COMPARE TO EXTRAPOLATIONS FOR ALL RVS?

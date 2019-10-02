@@ -27,13 +27,14 @@
   ##bring Lake IDs forward
   gg_dat2 <-  cbind(gg_dat[[1]], #extrapolation info
                     lakeID, #lake id
-                    X.scaled,
+                    X.scaled, #need to put all on same plot
                     Y) #logY 
   
-  gg_dat_unscaled <- cbind(gg_dat[[1]], #extrapolation info
-                           lakeID, #lake id
-                           X,
-                           Y)
+  
+  # gg_dat_unscaled <- cbind(gg_dat[[1]], #extrapolation info
+  #                          lakeID, #lake id
+  #                          X,
+  #                          Y)
   
   #isolate which lakes are extrapolation - 95% cutoff
   
