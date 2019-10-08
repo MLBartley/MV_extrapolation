@@ -198,12 +198,13 @@ ggparcoord(subset_nn[subset_subset, ],
         legend.title = element_blank())  +
   ggtitle("TN Extrapolated Lakes - 99% Cutoff") +
   theme(legend.position="none")
-
-ggsave("figures/figureS2.pdf",
-       width = 860, height = 573,
-       units = "mm")
+# 
+# ggsave("figures/figureS2.pdf",
+#        width = 860, height = 573,
+#        units = "mm")
 
 ggsave("figures/violin99_CMVPV.eps",
+       device=cairo_ps,
        width = 860, height = 573,
        units = "mm")
 

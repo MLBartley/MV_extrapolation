@@ -31,16 +31,16 @@
                     Y) #logY 
   
   
-  # gg_dat_unscaled <- cbind(gg_dat[[1]], #extrapolation info
-  #                          lakeID, #lake id
-  #                          X,
-  #                          Y)
+  gg_dat_unscaled <- cbind(gg_dat[[1]], #extrapolation info
+                           lakeID, #lake id
+                           X,
+                           Y)
   
   #isolate which lakes are extrapolation - 95% cutoff
   
-  table(factor(gg_dat2$nf_trace))
+  table(factor(gg_dat2$nf_determ))
   
-  extrapolated.all <- which(factor(gg_dat2$nf_trace) == 0)
+  extrapolated.all <- which(factor(gg_dat2$nf_determ) == 0)
   extrapolated.pred <- extrapolated.all[which(extrapolated.all > max(Sampled))]
   
   whichID.extrap.pred <- gg_dat2$lakeID[extrapolated.pred]
@@ -54,9 +54,9 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
   
   # 99% cutoff
   
-  table(factor(gg_dat2$nn_trace))
+  table(factor(gg_dat2$nn_determ))
   
-  extrapolated.all <- which(factor(gg_dat2$nn_trace) == 0)
+  extrapolated.all <- which(factor(gg_dat2$nn_determ) == 0)
   extrapolated.pred <- extrapolated.all[which(extrapolated.all > max(Sampled))]
   
   
@@ -184,7 +184,8 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
      theme(legend.position="none")
   
     
-  ggsave("figures/figureS1.pdf",
+  ggsave("figures/figureS1.eps",
+         device=cairo_ps,
          width = 860, height = 573,
          units = "mm")
   

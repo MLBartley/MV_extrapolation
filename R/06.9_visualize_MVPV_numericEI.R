@@ -383,46 +383,56 @@ ggsave("./figures/figureTEST.eps",
        width = 860, height = 573,
        units = "mm")
 
+##UPDATE: changing from color gradient to size gradient 
+## so only color legend needed
+
+colors <- c("#A6CEE3", "#e41a3e", "#e48e1a", "#e4c01a", "#9f122b")
+
 determ_all <- ggplot(gg_dat_pred_na.omit) +
-  # scale_colour_gradient2(low = "#A6CEE3",
-  #                        mid = "#A6CEE3",
-  #                        high = "#E41A1C",
-  #                        midpoint = 0) +
-  # geom_point(size = 2,
+  geom_point(#data = subset(gg_dat_pred_na.omit, color_det == 0),
+             aes(nhd_long,
+                 nhd_lat,
+             color = as.factor(color_det + 1),
+             shape =  as.factor(color_det + 1), 
+             size = log(gg_dat_pred_na.omit$nf_determ_n - min(gg_dat_pred_na.omit$nf_determ_n) + 0.01))) +
+  scale_shape_manual(name = "Extrapolation Cutoff",
+                     labels = c("Prediction", "99% Cutoff", "95% Cutoff"), 
+                     values=c(16, 15, 15, 15, 15))+
+  scale_size_continuous(range = c(5,10), guide = 'none') +
+  scale_colour_manual(name = "Extrapolation Cutoff",
+                      values = colors[1:5], 
+                      breaks = c( 1, 4, 5),
+                      labels = c("Prediction", "99% Cutoff", "95% Cutoff")) +
+  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 2),
   #            aes(nhd_long,
-  #                nhd_lat)) +
-  ## add blue "prediction" colors
-  geom_point(data = subset(gg_dat_pred_na.omit, color_det == 0),
-             aes(nhd_long,
-                 nhd_lat),
-             color = "#A6CEE3",
-             size = 5) +
-  geom_point(data = subset(gg_dat_pred_na.omit, color_det == 2),
-             aes(nhd_long,
-                 nhd_lat),
-             color = "#E4E21A",
-             size = 5) +
-  geom_point(data = subset(gg_dat_pred_na.omit, color_det == 3),
-             aes(nhd_long,
-                 nhd_lat,
-                 color = nn_determ_n),
-             size = 5) +
-  scale_color_gradient(low = "#eda45e",
-                       high = "#9f5712") +
-  geom_point(data = subset(gg_dat_pred_na.omit, color_det == 4),
-             aes(nhd_long,
-                 nhd_lat,
-                 fill = nf_determ_n),
-             size = 5, 
-             shape = 21) +
-  scale_fill_gradient(low = "#ed5e5f",
-                      high = "#9f1214") +
+  #                nhd_lat),
+  #            color = "#e41a3e",
+  #            size = 5, 
+  #            shape = 7) +
+  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 3),
+  #            aes(nhd_long,
+  #                nhd_lat,
+  #                color = nn_determ_n),
+  #            size = 5, 
+  #            shape = 15) +
+  # scale_color_gradient(low = "#eda45e",
+  #                      high = "#9f5712") +
+  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 4),
+  #            aes(nhd_long,
+  #                nhd_lat,
+  #                fill = nf_determ_n),
+  #            size = 5, 
+  #            shape = 22) +
+  # scale_fill_gradient(low = "#edd35e",
+  #                     high = "#9f8612") +
   states.lines + 
   coord_fixed(1.3) +
-  th.paper + theme(legend.text=element_text(size=30))
+  th.paper + theme(legend.text=element_text(size=30)) +
+  guides(color = guide_legend(override.aes = list(size = 10))) + 
+  theme(legend.position="bottom")
 
 determ_all
-ggsave("./figures/figureTEST_D.eps", 
+ggsave("./figures/figure_NEW.eps", 
        width = 860, height = 573,
        units = "mm")
 
