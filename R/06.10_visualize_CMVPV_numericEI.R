@@ -150,46 +150,31 @@ TN_all <- ggplot(TN_pred_na.omit) +
     aes(nhd_long,
         nhd_lat,
         color = as.factor(color_det + 1),
+        alpha = as.factor(color_det + 1),
         shape =  as.factor(color_det + 1), 
-        size = log(TN_pred_na.omit$nf_rel - min(TN_pred_na.omit$nf_rel) + 0.01))) +
+        size = as.factor(color_det + 1))) +
   scale_shape_manual(name = "Extrapolation Cutoff",
                      labels = c("Prediction", "Leverage Cutoff", "99% Cutoff", "95% Cutoff"), 
-                     values=c(16, 15, 15, 15, 15))+
-  scale_size_continuous(range = c(3,5), guide = 'none') +
+                     values=c(16, 15, 17, 18))+
+  scale_alpha_manual(name = "Extrapolation Cutoff",
+                     labels = c("Prediction", "Leverage Cutoff", "99% Cutoff", "95% Cutoff"), 
+                     values=c(.8, 1, 1, 1)) +
+  scale_size_manual(name = "Extrapolation Cutoff",
+                    labels = c("Prediction", "Leverage Cutoff", "99% Cutoff", "95% Cutoff"), 
+                    values=c(5, 8, 8, 8)) +
   scale_colour_manual(name = "Extrapolation Cutoff",
                       values = colors[1:5], 
                       breaks = c( 1, 3, 4, 5),
                       labels = c("Prediction", "Leverage Cutoff", "99% Cutoff", "95% Cutoff")) +
-  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 2),
-  #            aes(nhd_long,
-  #                nhd_lat),
-  #            color = "#e41a3e",
-  #            size = 5, 
-  #            shape = 7) +
-  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 3),
-  #            aes(nhd_long,
-  #                nhd_lat,
-  #                color = nn_determ_n),
-  #            size = 5, 
-#            shape = 15) +
-# scale_color_gradient(low = "#eda45e",
-#                      high = "#9f5712") +
-# geom_point(data = subset(gg_dat_pred_na.omit, color_det == 4),
-#            aes(nhd_long,
-#                nhd_lat,
-#                fill = nf_determ_n),
-#            size = 5, 
-#            shape = 22) +
-# scale_fill_gradient(low = "#edd35e",
-#                     high = "#9f8612") +
 states.lines + 
   coord_fixed(1.3) +
-  th.paper + theme(legend.text=element_text(size=30)) +
-  guides(color = guide_legend(override.aes = list(size = 10))) + 
+  th.paper + theme(legend.text=element_text(size=50)) +
+  guides(color = guide_legend(override.aes = list(size = 12))) + 
   theme(legend.position="bottom")
 
 TN_all
-ggsave("./figures/figure_TN.eps", 
+ggsave("./figures/Fig5_revisions.eps", 
+       device=cairo_ps, #ensures the transparancy stays
        width = 860, height = 573,
        units = "mm")
   

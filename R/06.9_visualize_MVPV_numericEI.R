@@ -393,47 +393,34 @@ determ_all <- ggplot(gg_dat_pred_na.omit) +
              aes(nhd_long,
                  nhd_lat,
              color = as.factor(color_det + 1),
+             # alpha= as.factor(color_det + 1),
              shape =  as.factor(color_det + 1), 
-             size = log(gg_dat_pred_na.omit$nf_determ_n - min(gg_dat_pred_na.omit$nf_determ_n) + 0.01))) +
+             size = as.factor(color_det + 1))) +
+             # size = log(gg_dat_pred_na.omit$nf_determ_n - min(gg_dat_pred_na.omit$nf_determ_n) + 0.01))) +
   scale_shape_manual(name = "Extrapolation Cutoff",
                      labels = c("Prediction", "99% Cutoff", "95% Cutoff"), 
-                     values=c(16, 15, 15, 15, 15))+
-  scale_size_continuous(range = c(5,10), guide = 'none') +
+                     values=c(16, 17, 18))+
+  # scale_size_continuous(range = c(2,10), guide = 'none') +
+  scale_size_manual(name = "Extrapolation Cutoff",
+                    labels = c("Prediction", "99% Cutoff", "95% Cutoff"), 
+                    values=c(5, 9, 9)) +
   scale_colour_manual(name = "Extrapolation Cutoff",
                       values = colors[1:5], 
                       breaks = c( 1, 4, 5),
                       labels = c("Prediction", "99% Cutoff", "95% Cutoff")) +
-  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 2),
-  #            aes(nhd_long,
-  #                nhd_lat),
-  #            color = "#e41a3e",
-  #            size = 5, 
-  #            shape = 7) +
-  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 3),
-  #            aes(nhd_long,
-  #                nhd_lat,
-  #                color = nn_determ_n),
-  #            size = 5, 
-  #            shape = 15) +
-  # scale_color_gradient(low = "#eda45e",
-  #                      high = "#9f5712") +
-  # geom_point(data = subset(gg_dat_pred_na.omit, color_det == 4),
-  #            aes(nhd_long,
-  #                nhd_lat,
-  #                fill = nf_determ_n),
-  #            size = 5, 
-  #            shape = 22) +
-  # scale_fill_gradient(low = "#edd35e",
-  #                     high = "#9f8612") +
+  # scale_alpha_manual(name = "Extrapolation Cutoff",
+  #                    values = c(.8, 1, 1), 
+  #                    labels = c("Prediction", "99% Cutoff", "95% Cutoff")) +
   states.lines + 
   coord_fixed(1.3) +
-  th.paper + theme(legend.text=element_text(size=30)) +
-  guides(color = guide_legend(override.aes = list(size = 10))) + 
+  th.paper + theme(legend.text=element_text(size=50)) +
+  guides(color = guide_legend(override.aes = list(size = 12))) + 
   theme(legend.position="bottom")
 
 determ_all
-ggsave("./figures/figure_NEW.eps", 
+ggsave("./figures/Fig3_revisions.eps", 
        width = 860, height = 573,
+       device=cairo_ps, #ensures the transparancy stays
        units = "mm")
 
 
