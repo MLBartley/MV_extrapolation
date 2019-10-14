@@ -69,3 +69,10 @@ cutoffs_UV_where <- vector()
   
   
 ```
+
+```{r, nn_derm table}
+
+
+
+```
+
