@@ -11,6 +11,7 @@
   library(ggplot2)
   library(reshape2)
   library(xtable)
+  library(GGally)
   
   
   #load in extrapolation data
@@ -45,8 +46,8 @@
   
   whichID.extrap.pred <- gg_dat2$lakeID[extrapolated.pred]
   
-  gg_dat2$nft_extrap <- "predicted"
-  gg_dat2$nft_extrap[extrapolated.pred] <- "extrapolated"
+  gg_dat2$nfd_extrap <- "predicted"
+  gg_dat2$nfd_extrap[extrapolated.pred] <- "extrapolated"
   
   table(gg_dat2$nft_extrap)
   
@@ -60,17 +61,18 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
   extrapolated.pred <- extrapolated.all[which(extrapolated.all > max(Sampled))]
   
   
-  gg_dat2$nnt_extrap <- "predicted"
-  gg_dat2$nnt_extrap[extrapolated.pred] <- "extrapolated"
+  gg_dat2$nnd_extrap <- "predicted"
+  gg_dat2$nnd_extrap[extrapolated.pred] <- "extrapolated"
   
-  table(gg_dat2$nnt_extrap)
+  table(gg_dat2$nnd_extrap)
   
- 
+  xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
+  
   
   ## reformat data for all in one plot
   
   gg_dat_melt <- melt(gg_dat2, 
-                      id.vars = c("lakeID", "nft_extrap", "nnt_extrap"), 
+                      id.vars = c("lakeID", "nfd_extrap", "nnd_extrap"), 
                                   measure.vars = names(X.scaled)[-c(1, 17, 18)])
                       
   
@@ -86,50 +88,11 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
   
   Xnames <- colnames(X)[-1] #-1 removes mean vector of 1s
   
-  # Xggplot <- list()
-  
-  # pdf("./figures/extrap_violins.pdf")
-  # for(i in 1:length(Xnames)) {
-  #   var <- Xnames[i]
-  #   
-  # q <- ggplot(gg_dat2, aes(x = "All", y = gg_dat2[, var])) +
-  #     geom_violin() +
-  #     geom_point(aes(color="All"), position = "jitter") +
-  #     geom_violin(data=gg_dat2, aes(x = nft_extrap, y = gg_dat2[, var])) +
-  #     geom_point(data=gg_dat2, aes(x = nft_extrap, y = gg_dat2[, var], color = nft_extrap), 
-  #                position = "jitter") +
-  #     scale_color_manual(values = c("black","#F8766D","#619CFF")) +
-  #     theme_minimal(base_size = 16) +
-  #     ylab(label = var) + 
-  #     theme(axis.title.x = element_blank(), legend.title = element_blank())
-  # print(q)
-  # 
-  # }
-  # dev.off()
-  
-  
-  ## all covariates scaled on one figure
-  
-  # all <- ggplot(gg_dat_melt, aes(x = variable, y = value)) +
-  #   geom_violin(scale = "width") +
-  #   geom_point(data = subset(gg_dat_melt, 
-  #                            nft_extrap == "extrapolated" ), 
-  #              aes(color= "#F8766D"), 
-  #              position = "jitter", 
-  #              alpha = 0.35) +
-  #   theme_minimal(base_size = 16) +
-  #   theme(axis.text.x = element_text(angle = 45,  hjust = 1)) +
-  #   # ylab(label = var) + 
-  #   theme(axis.title.x = element_blank(), legend.title = element_blank())
-  # 
-  # 
-  # all  + ylim(c(-5, 25))
-  
   
   ## parallel coordinates
-  library(GGally)
+ 
   
-  ggparcoord(subset(gg_dat2, nft_extrap == "extrapolated"), 
+  ggparcoord(subset(gg_dat2, nfd_extrap == "extrapolated"), 
              # scale = "uniminmax", 
              columns=c(29:44), 
              alphaLines = 0.4, 
@@ -158,7 +121,7 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
   #        units = "mm")
   
   #99%
-  ggparcoord(subset(gg_dat2, nnt_extrap == "extrapolated"), 
+  ggparcoord(subset(gg_dat2, nnd_extrap == "extrapolated"), 
              # scale = "uniminmax", 
              columns=c(29:43), 
              alphaLines = 0.8, 
@@ -189,7 +152,7 @@ xtable(gg_dat_unscaled[extrapolated.pred, colnames(X)[-1]])
          width = 860, height = 573,
          units = "mm")
   
-## set alpha = 0 
+# set alpha = 0
   # ggsave("figures/violin99_MVPV_nolines.pdf",
   #        width = 860, height = 573,
   #        units = "mm")
