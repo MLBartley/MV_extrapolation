@@ -2,27 +2,10 @@ LAGOS R Script README
 
 Organization Sections
 
-1. Data Gathering/Wrangling
+1. Data Gathering/Wrangling - Don't need to run, data available.
 2. Functions
 3. Running model on data and checking EDA
 4. Calculating Extrapolation Values
 5. Running CART models
 6. Plots
-7. Gathers results23
-
-01.1_prep-data.R
-  
-  -file grabbed/modified from LAGOS Git to find more lakes with missing response data
-  -loads data from LAGOS R package
-  
-
-01.2_WorkshopDataManage.R
-
-  -loads data from LAGOS 2018 workshop
-  - 
-  
-  
-  02.2_extrapolate_functions.R
-    - short functions for trace, determinent, covariance that can be used with apply
-    - extraoplate gets posterior PV for ALL response variables (unconditioned)
-    - extrapolate_cond gets PPV for TN response conditioned on available data
+7. Gathers results

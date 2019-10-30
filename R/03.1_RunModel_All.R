@@ -59,14 +59,6 @@ save(predALL,file="./rdata-data/predALL_190328.Rdata")
 # save(predALL.cond, file = "pred1_cond_180627.RData")
 
 
-##ISSUES/TODO##
-
-
-#1) what about testing data?? testing code currently commented out but still needed
-
-    #went though code to grab LPEP data and found 723 testing lakes.
-
-
 
 
 
