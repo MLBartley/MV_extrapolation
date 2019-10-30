@@ -19,7 +19,7 @@ library(magrittr)
 
 load("./rdata-data/runAll_190326.Rdata") 
 
-source("./R/03.3_RUNALL_eda_20180810.R") #gets leverage points and influential points
+source("./R/03.3_RUNALL_eda.R") #gets leverage points and influential points
 source("./R/02.2_extrapolate_functions.R") #gets useful functions
 
 X <- rbind(runALL$data$X, runALL$data$Xtest)

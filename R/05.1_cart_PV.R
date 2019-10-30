@@ -6,7 +6,12 @@
 ## Updated 1: 
 ###############################################################################
 
-source("./R/04.1_extrapolate_PV_20180907.R")
+# source("./R/04.1_extrapolate_PV.R")
+
+  load(file = "./rdata-data/list-into-extrap.Rdata") #4.01
+    list2env(savelist,globalenv())
+
+
   load("./rdata-data/extrap_values_20180927") #made later in 6.01?
 
 library(rattle)
@@ -44,9 +49,26 @@ savelist<- list(fit_binary = fit_binary, fit_numeric = fit_numeric,
                 CART.names = names)
 save(savelist, file = "./rdata-data/CART_PV_list_addLatLong.Rdata")
 
+# ##binary 
+#1 "levmax_determ"         
+#2 "levmax_determ_noise"  
+#3  "levmax_trace"              
+#4 "max_determ"          
+#5  "max_determ_noise"     
+#6  "max_trace"               
+#7 "nf_determ"           
+#8  "nf_determ_noise"      
+#9     "nf_trace"                    
+#10  "nn_determ"          
+#11    "nn_determ_noise"      
+#12    "nn_trace"          
+
 
 ##check resulting models 
-fit <- fit_binary[[12]]
+fit_nf_determ <- fit_binary[[7]]
+fit_nn_tr <- fit_binary[[12]]
+
+fit <- fit_nf_determ ## change to check diff versions
 
 printcp(fit)	#display cp table
 plotcp(fit)	#plot cross-validation results

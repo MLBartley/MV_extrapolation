@@ -18,7 +18,7 @@ library(rpart.plot)
 library(maptree)
 
 whichplot_fit_binary <- fit_binary[c(3, 7, 9, 10, 12)]
-whichplot_fit_binary <- fit_binary[c(9, 10)]
+# whichplot_fit_binary <- fit_binary[c(9, 10)]
 
  pdf("figures/binary_CART_MV_nf2.pdf",  width = 34, height = 30)
 
@@ -36,6 +36,15 @@ for (i in  1:length(whichplot_fit_binary)) { #won't work for max or lev max
             cex = 1)
 }
 dev.off()
+
+conf.matrix <- round(prop.table(table(t(na.omit(gg_dat[[1]]["nf_determ"])), 
+                                      predict(fit_binary[["nf_determ"]], type="class")),
+                                2), 2)
+
+
+
+
+
 # 
 # draw.tree(fit,cex=1)
 # prp(fit, type = 0, extra = 106, cex = 1)
